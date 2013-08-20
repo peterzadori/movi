@@ -1,0 +1,47 @@
+{form form}
+	<fieldset>
+		<legend>{$control->legend}</legend>
+
+		<p>
+			{input file, id => 'uploadify-file'}
+		</p>
+
+		<p n:if="!$control->isAuto()">
+			{input upload, id => 'uploadify-upload'}
+		</p>
+	</fieldset>
+{/form}
+
+<script>
+	$(document).ready(function() {
+		$('#uploadify-file').uploadify({
+			swf: {$basePath} + '/static/app/uploadify/' + {$swf},
+			formData: {
+				session_id: {=session_id()}
+			},
+			uploader: {link upload},
+			auto: {$auto},
+			buttonText: {$buttonText},
+			{if !empty($fileTypeExts)}
+			fileTypeExts: {$fileTypeExts},
+			{/if}
+			{if !empty($fileTypeDesc)}
+			fileTypeDesc: {$fileTypeDesc},
+			{/if}
+
+			onUploadSuccess: function() {
+				$.nette.ajax({
+					url: {link success}
+				});
+			}
+		});
+
+		{if !$control->isAuto()}
+		$('#uploadify-upload').click(function(event) {
+			$('#uploadify-file').uploadify('upload', '*');
+
+			event.preventDefault();
+		});
+		{/if}
+	});
+</script>

@@ -1,0 +1,24 @@
+<div class="pagination pagination-right pull-right">
+	<ul>
+		{if $paginator->isFirst()}
+			<li class="disabled"><span>&laquo;</span></li>
+		{else}
+			<li><a href="{link this, 'page' => $paginator->page - 1}" class="ajax">&laquo;</a></li>
+		{/if}
+
+		{foreach $steps as $step}
+			{if $step == $paginator->page}
+				<li class="active"><span>{$step}</span></li>
+			{else}
+				<li><a href="{link this, 'page' => $step}" class="ajax">{$step}</a></li>
+			{/if}
+			{if $iterator->nextValue > $step + 1}<li><span>...</span></li>{/if}
+		{/foreach}
+
+		{if $paginator->isLast()}
+			<li class="disabled"><span>&raquo;</span></li>
+		{else}
+			<li><a href="{link this, 'page' => $paginator->page + 1}" class="ajax">&raquo;</a></li>
+		{/if}
+	</ul>
+</div>

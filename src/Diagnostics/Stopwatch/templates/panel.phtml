@@ -1,0 +1,18 @@
+<div>
+	<h1>
+		Stopwatch
+	</h1>
+
+	<?php if (empty($this::$timers)): ?>
+		no timers
+	<?php else: ?>
+		<table>
+			<?php foreach($this::$timers as $name => $time): ?>
+				<tr>
+					<th><?php echo $name ?></th>
+					<td><?php echo number_format($time * 1000, 2, '.', '') ?>ms</td>
+				</tr>
+			<?php endforeach ?>
+		</table>
+	<?php endif ?>
+</div>

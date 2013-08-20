@@ -1,0 +1,28 @@
+{
+	"name": "peterzadori/movi",
+	"description": "A small custom framework built on the Nette Framework for personal use.",
+	"minimum-stability": "dev",
+	"authors": [
+		{
+			"name": "Peter Zádori",
+			"email": "peter.zadori@gmail.com"
+		}
+	],
+	"require": {
+		"php": ">=5.4",
+		"nette/nette": "2.0.*",
+		"kdyby/events": "dev-nette-2.0",
+		"kdyby/forms-replicator": "dev-nette-2.0",
+		"tharos/leanmapper": "dev-develop",
+		"doctrine/inflector": "dev-master",
+		"kdyby/console": "dev-nette-2.0",
+		"Kdyby/bootstrap-form-renderer": "@dev"
+	},
+	"require-dev": {
+		"nette/tester": "dev-master"
+	},
+	"autoload": {
+		"files": ["src/loader.php"],
+		"classmap": ["src/"]
+	}
+}

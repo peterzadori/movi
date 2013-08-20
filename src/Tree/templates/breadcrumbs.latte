@@ -1,0 +1,10 @@
+<p class="breadcrumbs">
+	{foreach $nodes as $node}
+		{if $iterator->isLast()}
+			{$node->title}
+		{else}
+			<a href="{$control->presenter->link($control->destination, array('node' => $node->id))}">{$node->title}</a>
+		{/if}
+		{sep}&raquo;{/sep}
+	{/foreach}
+</p>

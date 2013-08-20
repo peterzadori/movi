@@ -1,0 +1,125 @@
+{snippet}
+	<div n:foreach="$flashes as $flash" n:class="alert, $flash->type">
+		{$flash->message}
+	</div>
+
+    {var colspan => count($control['columns']->getColumns())}
+    {if $control->hasActions()}{? $colspan++}{/if}
+    {if $control->hasButtons() || $control->hasFilters()}{? $colspan++}{/if}
+
+	{form form, class => ["ajax", "form-inline"]}
+		{* Begin table *}
+		{!$control->table->startTag()}
+			<thead>
+				<tr>
+					<th class="checkbox" n:if="$control->hasActions()" width="30">
+						{input item-all}
+					</th>
+
+					{foreach $control['columns']->getColumns() as $column}
+						{include #column, column => $column|indent:4}
+					{/foreach}
+
+					<th n:if="$control->hasButtons()" width="200"></th>
+				</tr>
+
+				<tr n:if="$control->hasFilters()">
+					<td class="checkbox" n:if="$control->hasActions()"></td>
+
+					{foreach $control['columns']->getColumns() as $column}
+						{include #filter, column => $column|indent:4}
+					{/foreach}
+
+					<td align="right">
+						{input filter-filter, class => 'btn'}
+						<a n:href="this, filter => NULL" n:if="$control->isFiltering()" class="ajax" title="Zrušiť filter"><i class="icon icon-remove"></i></a>
+					</td>
+				</tr>
+			</thead>
+
+			<tbody>
+				{if count($rows) > 0}
+					{foreach $rows as $row}
+						{include #row, row => $row|indent:4}
+					{/foreach}
+				{else}
+					<td colspan="{$colspan}">
+						<div class="alert alert-info">
+							Žiadne záznamy.
+						</div>
+					</td>
+				{/if}
+			</tbody>
+
+			<tfoot n:if="count($rows) > 0">
+				<tr>
+					<td colspan="{$colspan}" class="form-actions">
+						{if $control->hasActions()}
+							{foreach $control['form']['action']->getControls() as $action}
+								{input $action, class => 'btn'}
+							{/foreach}
+						{/if}
+
+						<div class="pull-right">
+							{control paginator}
+						</div>
+					</td>
+				</tr>
+			</tfoot>
+		{!$control->table->endTag()}
+		{* End table *}
+	{/form}
+{/snippet}
+
+{define column}
+	{var head => $column->head}
+	{var sort => $control->sorting[1]}
+
+	{if $column->isSortable()}
+		{? $head->class[] = 'sorting'}
+
+		{if $column->isSorting()}
+			{? $head->class[] = strtolower($sort)}
+		{/if}
+	{/if}
+
+	{!$head->startTag()}
+		{if $column->isSortable()}
+			{var sort => ($control->sorting[0] == $column->name) ? ($sort == 'ASC' ? 'DESC' : 'ASC') : $sort}
+			<a n:href="this, sorting => array($column->name, $sort)" class="ajax">{$column->label}</a>
+		{else}
+			{$column->label}
+		{/if}
+	{!$head->endTag()}
+{/define}
+
+{define filter}
+	{!$column->cell->startTag()}
+		{if $column->hasFilter()}
+			{input $column->getFilter()}
+		{/if}
+	{!$column->cell->endTag()}
+{/define}
+
+{define row}
+	{var tr => $control->getRow($row)}
+
+	{!$tr->startTag()}
+		<td class="checkbox" n:if="$control->hasActions()">
+			{input $control['form']['item'][$row->{$control->getPrimaryKey()}]}
+		</td>
+
+		{foreach $control['columns']->getColumns() as $column}
+			{!$column->cell->startTag()}
+				{control $column, $row}
+			{!$column->cell->endTag()}
+		{/foreach}
+
+		<td n:if="$control->hasButtons()" align="right" class="buttons">
+			{foreach $control->getButtons() as $button}
+				{control $button, $row}
+
+			{/foreach}
+		</td>
+	{!$tr->endTag()}
+{/define}
