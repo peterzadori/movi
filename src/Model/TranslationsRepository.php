@@ -31,13 +31,12 @@ abstract class TranslationsRepository extends Repository
 	}
 
 
-	/**
-	 * @param Fluent $statement
-	 * @return $this|void
-	 */
-	public function beforeFetch(Fluent $statement)
+	public function getStatement()
 	{
-		return $statement->applyFilter('translate', $this->getTable());
+		$statement = parent::getStatement();
+		$statement->applyFilter('translate', $this->getTable());
+
+		return $statement;
 	}
 
 
