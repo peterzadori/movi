@@ -150,6 +150,17 @@ abstract class Repository extends \LeanMapper\Repository
 
 
 	/**
+	 * @param null $key
+	 * @param null $value
+	 * @return array
+	 */
+	public function fetchPairs($key = NULL, $value = NULL)
+	{
+		return $this->getStatement()->fetchPairs($key, $value);
+	}
+
+
+	/**
 	 * @param $method
 	 * @param $args
 	 */
