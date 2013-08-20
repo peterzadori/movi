@@ -18,38 +18,38 @@ abstract class Repository extends \LeanMapper\Repository
 	/** @var array */
 	protected $annotations;
 
-    /** @var \Kdyby\Events\EventManager */
-    protected $evm;
+	/** @var \Kdyby\Events\EventManager */
+	protected $evm;
 
 
-    public function __construct(Connection $connection, IMapper $mapper, EventManager $evm)
-    {
-        parent::__construct($connection, $mapper);
+	public function __construct(Connection $connection, IMapper $mapper, EventManager $evm)
+	{
+		parent::__construct($connection, $mapper);
 
-        $this->evm = $evm;
-        $this->initKdybyEvents();
-    }
+		$this->evm = $evm;
+		$this->initKdybyEvents();
+	}
 
 
-    private function initKdybyEvents()
-    {
-        static $events = array(
-            Events::EVENT_BEFORE_PERSIST,
-            Events::EVENT_BEFORE_CREATE,
-            Events::EVENT_BEFORE_UPDATE,
-            Events::EVENT_BEFORE_DELETE,
-            Events::EVENT_AFTER_PERSIST,
-            Events::EVENT_AFTER_CREATE,
-            Events::EVENT_AFTER_UPDATE,
-            Events::EVENT_AFTER_DELETE,
-        );
+	private function initKdybyEvents()
+	{
+		static $events = array(
+			Events::EVENT_BEFORE_PERSIST,
+			Events::EVENT_BEFORE_CREATE,
+			Events::EVENT_BEFORE_UPDATE,
+			Events::EVENT_BEFORE_DELETE,
+			Events::EVENT_AFTER_PERSIST,
+			Events::EVENT_AFTER_CREATE,
+			Events::EVENT_AFTER_UPDATE,
+			Events::EVENT_AFTER_DELETE,
+		);
 
-        foreach ($events as $eventName) {
-            $ns = get_class($this);
-            $event = $this->evm->createEvent($ns . '::' . 'on' . ucfirst($eventName));
-            $this->events->registerCallback($eventName, $event);
-        }
-    }
+		foreach ($events as $eventName) {
+			$ns = get_class($this);
+			$event = $this->evm->createEvent($ns . '::' . 'on' . ucfirst($eventName));
+			$this->events->registerCallback($eventName, $event);
+		}
+	}
 
 
 	/**
@@ -100,8 +100,6 @@ abstract class Repository extends \LeanMapper\Repository
 			}
 		}
 
-		$this->beforeFetch($statement);
-
 		$row = $statement->fetch();
 
 		if (!$row) {
@@ -135,8 +133,6 @@ abstract class Repository extends \LeanMapper\Repository
 			$statement->orderBy($column, ($order === NULL) ? 'ASC' : $order);
 		}
 
-		$this->beforeFetch($statement);
-
 		return $this->createEntities(
 			$statement->fetchAll($offset, $limit)
 		);
@@ -145,22 +141,11 @@ abstract class Repository extends \LeanMapper\Repository
 
 	/**
 	 * @param Fluent $statement
-	 * @return Entity[]
+	 * @return array
 	 */
 	public function fetchStatement(Fluent $statement)
 	{
-		$this->beforeFetch($statement);
-
 		return $this->createEntities($statement->fetchAll());
-	}
-
-
-	/**
-	 * @param Fluent $statement
-	 */
-	public function beforeFetch(Fluent $statement)
-	{
-
 	}
 
 
