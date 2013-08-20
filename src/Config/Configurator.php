@@ -49,6 +49,7 @@ final class Configurator extends Nette\Config\Configurator
 		$compiler->addExtension('extensions', new movi\Config\Extensions\ExtensionsExtension);
 		$compiler->addExtension('forms', new movi\Forms\DI\FormsExtension());
 		$compiler->addExtension('events', new Kdyby\Events\DI\EventsExtension());
+		$compiler->addExtension('console', new Kdyby\Console\DI\ConsoleExtension());
 
 		return $compiler;
 	}
