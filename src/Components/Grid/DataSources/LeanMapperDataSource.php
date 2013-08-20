@@ -30,7 +30,11 @@ class LeanMapperDataSource implements IDataSource
 
 	public function count()
 	{
-		return $this->statement->count();
+		$statement = clone $this->statement;
+		$statement->removeClause('SELECT');
+		$statement->select('COUNT(*)');
+
+		return $statement->fetchSingle();
 	}
 
 
@@ -39,7 +43,7 @@ class LeanMapperDataSource implements IDataSource
 		$this->statement->removeClause('ORDER BY');
 
 		list($column, $sort) = $sorting;
-        $column = sprintf('[%s]', $column);
+		$column = sprintf('[%s]', $column);
 
 		$this->statement->orderBy($column, $sort);
 	}
