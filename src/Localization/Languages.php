@@ -28,8 +28,10 @@ final class Languages extends Object
 		foreach ($this->languages as $language)
 		{
 			if ($language->default === true) {
-				$this->setCurrent($language);
+				$this->current = $language;
 				$this->default = $language;
+
+				$this->setCurrent($language);
 			}
 		}
 	}
