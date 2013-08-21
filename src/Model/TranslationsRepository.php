@@ -20,8 +20,6 @@ abstract class TranslationsRepository extends Repository
 	/** @var \movi\Localization\Language */
 	protected $language;
 
-	public $onTranslationPersist;
-
 
 	public function __construct(Connection $connection, IMapper $mapper, EventManager $evm, Language $language)
 	{
@@ -42,59 +40,108 @@ abstract class TranslationsRepository extends Repository
 
 	/**
 	 * @param Entity $entity
-	 * @param null $language
-	 * @return \DibiResult|int|mixed|null
+	 * @param \movi\Model\Entities\Language $language
+	 * @return mixed|void
 	 * @throws \movi\InvalidArgumentException
 	 */
-	public function persist(Entity $entity, $language = NULL)
+	public function persist(Entity $entity, \movi\Model\Entities\Language $language = NULL)
 	{
 		if (!($entity instanceof TranslatableEntity)) {
-			throw new InvalidArgumentException('Only translatable entity can be persisted.');
+			throw new InvalidArgumentException('Only translatable entities can be persisted.');
+		}
+
+		if ($language !== NULL) {
+			$this->language->setLanguage($language);
 		}
 
 		parent::persist($entity);
-
-		$this->persistTranslation($entity, $language);
 	}
 
 
 	/**
-	 * @param TranslatableEntity $entity
-	 * @param null $language
+	 * @param Entity $entity
+	 * @return int|mixed
 	 */
-	private function persistTranslation(TranslatableEntity $entity, $language = NULL)
+	protected function insertIntoDatabase(Entity $entity)
 	{
-		$translation = $entity->getModifiedTranslationsData();
-
+		/** @var TranslatableEntity $entity */
 		$table = $this->getTable();
+		$primaryKey = $this->mapper->getPrimaryKey($table);
+		$values = array_diff_key($entity->getModifiedRowData(), $entity->getTranslatableColumns());
+
+		$this->connection->query(
+			'INSERT INTO %n %v', $table, $values
+		);
+
+		$id = isset($values[$primaryKey]) ? $values[$primaryKey] : $this->connection->getInsertId();
+
+		$this->insertTranslation($id, $entity);
+
+		return $id;
+	}
+
+
+	/**
+	 * @param Entity $entity
+	 * @return mixed|void
+	 */
+	protected function updateInDatabase(Entity $entity)
+	{
+		/** @var TranslatableEntity $entity */
+		$table = $this->getTable();
+		$primaryKey = $this->mapper->getPrimaryKey($table);
+		$idField = $this->mapper->getEntityField($table, $primaryKey);
+
+		$values = array_diff_key($entity->getModifiedRowData(), $entity->getTranslatableColumns());
+
+		if (!empty($values)) {
+			$this->connection->query(
+				'UPDATE %n SET %a WHERE %n = ?', $this->getTable(), $values, $primaryKey, $entity->$idField
+			);
+		}
+
+		$this->insertTranslation($entity->$idField, $entity);
+	}
+
+
+	/**
+	 * @param $id
+	 * @param TranslatableEntity $entity
+	 */
+	private function insertTranslation($id, TranslatableEntity $entity)
+	{
+		$table = $this->getTable();
+		$languageColumn = $this->mapper->getLanguageColumn();
 		$translationsTable = $this->mapper->getTranslationsTable($table);
-		$translationsColumn = $this->mapper->getTranslationsColumn($table);
-		$primaryKey = $this->mapper->getPrimaryKey($this->getTable());
-		$idField = $this->mapper->getEntityField($this->getTable(), $primaryKey);
+		$translationsViaColumn = $this->mapper->getTranslationsColumn($table);
 
-		$language = ($language !== NULL) ? $language : $this->language->getLanguage();
+		// Translation
+		$translation = array_intersect_key($entity->getModifiedRowData(), $entity->getTranslatableColumns());
+		$translation[$translationsViaColumn] = $id;
+		$translation[$languageColumn] = $this->language->id;
 
-		$translation[$translationsColumn] = $entity->$idField;
-		$translation['language_id'] = $language->id;
-
-		$row = $this->connection->select('%n', $translationsColumn)
-			->from($translationsTable)
-			->where('language_id = %i', $language->id)
-			->where('%n = %i', $translationsColumn, $entity->$idField)
-			->fetchSingle();
-
-		if (!$row) {
+		if ($entity->isDetached()) {
 			$this->connection->query(
 				'INSERT INTO %n %v', $translationsTable, $translation
 			);
 		} else {
-			$this->connection->query(
-				'UPDATE %n SET %a WHERE %n = ? AND [language_id] = %s',
-				$translationsTable, $translation, $translationsColumn, $entity->$idField, $language->id
-			);
-		}
+			$row = $this->connection->select('*')
+				->from($translationsTable)
+				->where('%n = %i', $languageColumn, $this->language->id)
+				->where('%n = %i', $translationsViaColumn, $id)
+				->fetchSingle();
 
-		$this->onTranslationPersist($entity, $language);
+			if (!$row) {
+				$this->connection->query(
+					'INSERT INTO %n %v', $translationsTable, $translation
+				);
+			} else {
+				$this->connection->query(
+					'UPDATE %n SET %a WHERE %n = ? AND [language_id] = %s',
+					$translationsTable, $translation, $translationsViaColumn, $id, $this->language->id
+				);
+			}
+		}
 	}
 
 
@@ -105,13 +152,16 @@ abstract class TranslationsRepository extends Repository
 	public function getTranslations(TranslatableEntity $entity)
 	{
 		$table = $this->getTable();
+		$languageColumn = $this->mapper->getLanguageColumn();
 		$translationsTable = $this->mapper->getTranslationsTable($table);
 		$translationsColumn = $this->mapper->getTranslationsColumn($table);
+		$primaryKey = $this->mapper->getPrimaryKey($table);
+		$idField = $this->mapper->getEntityField($table, $primaryKey);
 
 		return $this->connection->select('*')
 			->from($translationsTable)
-			->where('%n = %i', $translationsColumn, $entity->id)
-			->fetchAssoc('language_id');
+			->where('%n = %i', $translationsColumn, $entity->$idField)
+			->fetchAssoc($languageColumn);
 	}
 
 

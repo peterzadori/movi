@@ -10,6 +10,7 @@ use Nette\Utils\Strings;
 class Mapper extends DefaultMapper
 {
 
+	/** @var string */
 	protected $defaultEntityNamespace = '\movi\Model\Entities';
 
 	/** @var array */
@@ -27,7 +28,7 @@ class Mapper extends DefaultMapper
 
 
 	/**
-	 * @param $table
+	 * @param string $table
 	 * @param Row $row
 	 * @return string
 	 */
@@ -56,6 +57,15 @@ class Mapper extends DefaultMapper
 
 
 	/**
+	 * @return string
+	 */
+	public function getLanguageColumn()
+	{
+		return 'language_id';
+	}
+
+
+	/**
 	 * @param $table
 	 * @return string
 	 */
@@ -73,6 +83,5 @@ class Mapper extends DefaultMapper
 	{
 		return Inflector::singularize($table) . '_id';
 	}
-
 
 }
