@@ -45,8 +45,8 @@ abstract class Repository extends \LeanMapper\Repository
 		);
 
 		foreach ($events as $eventName) {
-			$ns = get_class($this);
-			$event = $this->evm->createEvent($ns . '::' . 'on' . ucfirst($eventName));
+			$ns = get_called_class();
+			$event = $this->evm->createEvent($ns . '::' . $eventName);
 			$this->events->registerCallback($eventName, $event);
 		}
 	}
