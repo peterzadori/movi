@@ -5,10 +5,8 @@ namespace movi\Model\Repositories;
 use Kdyby\Events\EventManager;
 use LeanMapper\Connection;
 use LeanMapper\Entity;
-use LeanMapper\Fluent;
 use LeanMapper\IMapper;
 use movi\InvalidArgumentException;
-use movi\Localization\Language;
 use movi\Model\Entities\TranslatableEntity;
 
 /**
@@ -17,15 +15,15 @@ use movi\Model\Entities\TranslatableEntity;
 abstract class TranslationsRepository extends Repository
 {
 
-	/** @var \movi\Localization\Language */
-	protected $language;
+	/** @var \movi\Model\Repositories\LanguagesRepository */
+	protected $languagesRepository;
 
 
-	public function __construct(Connection $connection, IMapper $mapper, EventManager $evm, Language $language)
+	public function __construct(Connection $connection, IMapper $mapper, EventManager $evm, LanguagesRepository $languagesRepository)
 	{
 		parent::__construct($connection, $mapper, $evm);
 
-		$this->language = $language;
+		$this->languagesRepository = $languagesRepository;
 	}
 
 
@@ -40,18 +38,13 @@ abstract class TranslationsRepository extends Repository
 
 	/**
 	 * @param Entity $entity
-	 * @param \movi\Model\Entities\Language $language
 	 * @return mixed|void
 	 * @throws \movi\InvalidArgumentException
 	 */
-	public function persist(Entity $entity, \movi\Model\Entities\Language $language = NULL)
+	public function persist(Entity $entity)
 	{
 		if (!($entity instanceof TranslatableEntity)) {
 			throw new InvalidArgumentException('Only translatable entities can be persisted.');
-		}
-
-		if ($language !== NULL) {
-			$this->language->setLanguage($language);
 		}
 
 		parent::persist($entity);
@@ -121,13 +114,20 @@ abstract class TranslationsRepository extends Repository
 		$translation[$languageColumn] = $this->language->id;
 
 		if ($entity->isDetached()) {
-			$this->connection->query(
-				'INSERT INTO %n %v', $translationsTable, $translation
-			);
+			foreach ($this->languagesRepository->findAll() as $language)
+			{
+				if (!isset($translation[$languageColumn]) || $translation[$languageColumn] != $language->id) {
+					$translation[$languageColumn] = $language->id;
+				}
+
+				$this->connection->query(
+					'INSERT INTO %n %v', $translationsTable, $translation
+				);
+			}
 		} else {
 			$row = $this->connection->select('*')
 				->from($translationsTable)
-				->where('%n = %i', $languageColumn, $this->language->id)
+				->where('%n = %i', $languageColumn, $translation[$languageColumn])
 				->where('%n = %i', $translationsViaColumn, $id)
 				->fetchSingle();
 
@@ -137,8 +137,8 @@ abstract class TranslationsRepository extends Repository
 				);
 			} else {
 				$this->connection->query(
-					'UPDATE %n SET %a WHERE %n = ? AND [language_id] = %s',
-					$translationsTable, $translation, $translationsViaColumn, $id, $this->language->id
+					'UPDATE %n SET %a WHERE %n = ? AND %n = %s',
+					$translationsTable, $translation, $translationsViaColumn, $id, $languageColumn, $translation[$languageColumn]
 				);
 			}
 		}
