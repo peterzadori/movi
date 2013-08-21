@@ -40,7 +40,7 @@ final class Translator implements ITranslator, Subscriber
 
 	public function getSubscribedEvents()
 	{
-		return array('movi\Localization\Languages::onSet');
+		return array('movi\Localization\Language::onSet');
 	}
 
 
