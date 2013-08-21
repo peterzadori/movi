@@ -3,7 +3,7 @@
 namespace movi\Localization;
 
 use movi\Caching\CacheProvider;
-use movi\Model\Entities\Language;
+use movi\Model\Entities\Language as LanguageEntity;
 use Nette\Caching\Cache;
 use Nette\Localization\ITranslator;
 use Nette\Utils\Neon;
@@ -47,7 +47,7 @@ final class Translator implements ITranslator, Subscriber
 	/**
 	 * @param $language
 	 */
-	public function onSet(Language $language)
+	public function onSet(LanguageEntity $language)
 	{
 		if ($this->cache->load($language->code) === NULL) {
 			$file = sprintf('%s/local/%s.neon', $this->appDir, $language->code);
