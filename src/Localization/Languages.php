@@ -4,7 +4,7 @@ namespace movi\Localization;
 
 use movi\Model\Repositories\LanguagesRepository;
 use Nette\Object;
-use movi\Model\Entities\Language;
+use movi\Model\Entities\Language as LanguageEntity;
 
 final class Languages extends Object
 {
@@ -15,13 +15,13 @@ final class Languages extends Object
 	/** @var Language */
 	private $current;
 
-	/** @var Language */
+	/** @var LanguageEntity */
 	private $default;
 
 	public $onSet;
 
 
-	public function __construct(LanguagesRepository $languagesRepository)
+	public function __construct(Language $language, LanguagesRepository $languagesRepository)
 	{
 		$this->languages = $languagesRepository->findActive();
 
@@ -45,16 +45,12 @@ final class Languages extends Object
 
 
 	/**
-	 * @param Language $language
+	 * @param LanguageEntity $language
 	 * @return $this
 	 */
-	public function setCurrent(Language $language)
+	public function setCurrent(LanguageEntity $language)
 	{
-		if ($this->current == NULL || $language->code != $this->current->code) {
-			$this->current = $language;
-
-			$this->onSet($language);
-		}
+		$this->current->setLanguage($language);
 
 		return $this;
 	}
@@ -65,7 +61,7 @@ final class Languages extends Object
 	 */
 	public function getCurrent()
 	{
-		return $this->current;
+		return $this->current->getLanguage();
 	}
 
 
@@ -74,7 +70,7 @@ final class Languages extends Object
 	 */
 	public function getLanguage()
 	{
-		return $this->current;
+		return $this->current->getLanguage();
 	}
 
 

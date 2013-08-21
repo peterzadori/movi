@@ -4,22 +4,22 @@ namespace movi\Model\Filters;
 
 use LeanMapper\Fluent;
 use LeanMapper\Reflection\Property;
-use movi\Localization\Languages;
+use movi\Localization\Language;
 use movi\Model\Mapper;
 
 class TranslateFilter
 {
 
-	/** @var Languages */
-	private $languages;
+	/** @var Language */
+	private $language;
 
 	/** @var Mapper */
 	private $mapper;
 
 
-	public function __construct(Languages $languages, Mapper $mapper)
+	public function __construct(Language $language, Mapper $mapper)
 	{
-		$this->languages = $languages;
+		$this->language = $language;
 		$this->mapper = $mapper;
 	}
 
@@ -55,7 +55,7 @@ class TranslateFilter
 			->select('t.*')
 			->leftJoin('%n t', $this->mapper->getTranslationsTable($table))
 			->on('t.%n = %n.%n', $this->mapper->getTranslationsColumn($table), $table, $this->mapper->getPrimaryKey($table))
-			->where('language_id = %s', $this->languages->getLanguage()->id);
+			->where('language_id = %s', $this->language->getLanguage()->id);
 	}
 
 }
