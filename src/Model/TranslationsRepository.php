@@ -124,21 +124,23 @@ abstract class TranslationsRepository extends Repository
 				);
 			}
 		} else {
-			$row = $this->connection->select('*')
-				->from($translationsTable)
-				->where('%n = %i', $languageColumn, $translation[$languageColumn])
-				->where('%n = %i', $translationsViaColumn, $id)
-				->fetchSingle();
+			if (isset($translation[$languageColumn])) {
+				$row = $this->connection->select('*')
+					->from($translationsTable)
+					->where('%n = %i', $languageColumn, $translation[$languageColumn])
+					->where('%n = %i', $translationsViaColumn, $id)
+					->fetchSingle();
 
-			if (!$row) {
-				$this->connection->query(
-					'INSERT INTO %n %v', $translationsTable, $translation
-				);
-			} else {
-				$this->connection->query(
-					'UPDATE %n SET %a WHERE %n = ? AND %n = %s',
-					$translationsTable, $translation, $translationsViaColumn, $id, $languageColumn, $translation[$languageColumn]
-				);
+				if (!$row) {
+					$this->connection->query(
+						'INSERT INTO %n %v', $translationsTable, $translation
+					);
+				} else {
+					$this->connection->query(
+						'UPDATE %n SET %a WHERE %n = ? AND %n = %s',
+						$translationsTable, $translation, $translationsViaColumn, $id, $languageColumn, $translation[$languageColumn]
+					);
+				}
 			}
 		}
 	}
