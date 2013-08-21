@@ -7,6 +7,7 @@ use LeanMapper\Connection;
 use LeanMapper\Entity;
 use LeanMapper\IMapper;
 use movi\InvalidArgumentException;
+use movi\Localization\Languages;
 use movi\Model\Entities\TranslatableEntity;
 
 /**
@@ -16,14 +17,14 @@ abstract class TranslationsRepository extends Repository
 {
 
 	/** @var \movi\Model\Repositories\LanguagesRepository */
-	protected $languagesRepository;
+	protected $languages;
 
 
-	public function __construct(Connection $connection, IMapper $mapper, EventManager $evm, LanguagesRepository $languagesRepository)
+	public function __construct(Connection $connection, IMapper $mapper, EventManager $evm, Languages $languages)
 	{
 		parent::__construct($connection, $mapper, $evm);
 
-		$this->languagesRepository = $languagesRepository;
+		$this->languages = $languages;
 	}
 
 
@@ -113,7 +114,7 @@ abstract class TranslationsRepository extends Repository
 		$translation[$translationsViaColumn] = $id;
 
 		if ($entity->isDetached()) {
-			foreach ($this->languagesRepository->findAll() as $language)
+			foreach ($this->languages->getLanguages() as $language)
 			{
 				if (!isset($translation[$languageColumn]) || $translation[$languageColumn] != $language->id) {
 					$translation[$languageColumn] = $language->id;

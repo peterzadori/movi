@@ -3,6 +3,7 @@
 namespace movi\Localization;
 
 use movi\Caching\CacheProvider;
+use movi\Model\Entities\Language;
 use Nette\Caching\Cache;
 use Nette\Localization\ITranslator;
 use Nette\Utils\Neon;
@@ -19,8 +20,8 @@ final class Translator implements ITranslator, Subscriber
 	/** @var string */
 	private $appDir;
 
-	/** @var \movi\Localization\Language */
-	private $language;
+	/** @var \movi\Localization\Languages */
+	private $languages;
 
 	/** @var array */
 	private $translations;
@@ -29,24 +30,24 @@ final class Translator implements ITranslator, Subscriber
 	private $cache;
 
 
-	public function __construct($appDir, Language $language, CacheProvider $cacheProvider)
+	public function __construct($appDir, Languages $languages, CacheProvider $cacheProvider)
 	{
 		$this->appDir = $appDir;
-		$this->language = $language;
+		$this->languages = $languages;
 		$this->cache = $cacheProvider->create('movi.translations');
 	}
 
 
 	public function getSubscribedEvents()
 	{
-		return array('movi\Localization\Language::onSet');
+		return array('movi\Localization\Languages::onSet');
 	}
 
 
 	/**
 	 * @param $language
 	 */
-	public function onSet($language)
+	public function onSet(Language $language)
 	{
 		if ($this->cache->load($language->code) === NULL) {
 			$file = sprintf('%s/local/%s.neon', $this->appDir, $language->code);
@@ -76,7 +77,7 @@ final class Translator implements ITranslator, Subscriber
 	public function translate($message, $count = NULL)
 	{
 		// Language must be set
-		if ($this->language->isLanguageSet()) {
+		if ($this->languages->isLanguageSet()) {
 			if (isset($this->translations) && array_key_exists($message, $this->translations)) {
 				return $this->translations[$message];
 			}
@@ -93,7 +94,7 @@ final class Translator implements ITranslator, Subscriber
 	 */
 	public function translatePresenter($presenter, $way = 'out')
 	{
-		if ($this->language->isLanguageSet() && isset($this->translations[self::PRESENTERS])) {
+		if ($this->languages->isLanguageSet() && isset($this->translations[self::PRESENTERS])) {
 			$presenters = $this->translations[self::PRESENTERS];
 			$presenter = strtolower($presenter);
 

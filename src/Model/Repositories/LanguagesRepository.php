@@ -2,10 +2,7 @@
 
 namespace movi\Model\Repositories;
 
-use movi\InvalidArgumentException;
-use Nette\Http\Request;
 use Nette\Utils\Strings;
-use movi\Model\Entities\Language;
 
 /**
  * Class LanguagesRepository
@@ -16,21 +13,16 @@ use movi\Model\Entities\Language;
 final class LanguagesRepository extends Repository
 {
 
-	/** @var \Nette\Http\Request  */
-	private $request;
-
-	public $detect;
-
-
 	/**
-	 * @param Request $request
+	 * @return array
 	 */
-	public function setRequest(Request $request)
+	public function findActive()
 	{
-		$this->request = $request;
+		return $this->findAll(array('[active] = %i' => true));
 	}
 
 
+	/*
 	public function beforePersist(array $values)
 	{
 		$values['code'] = Strings::lower($values['code']);
@@ -45,38 +37,6 @@ final class LanguagesRepository extends Repository
 
 		return $values;
 	}
-
-
-	/**
-	 * @param bool
-	 * @return Language
-	 */
-	public function getDefaultLanguage()
-	{
-		if ($this->detect === true) {
-			$language = $this->detectLanguage();
-
-			if ($language) return $this->findBy(array('[code] = %s' => $language))->fetch();
-		}
-
-		return $this->findBy(array('[default] = %i' => true));
-	}
-	
-
-	/**
-	 * @return string
-	 */
-
-	private function detectLanguage()
-	{
-		$languages = $this->getStatement()->where('[active] = %i', true)->fetchPairs('id', 'code');
-		$language = $this->request->detectLanguage(explode(',', implode(',', $languages)));
-
-		if ($language == NULL) {
-			return array_slice($languages, 0, 1);
-		} else {
-			return $language;
-		}
-	}
+	*/
 
 }

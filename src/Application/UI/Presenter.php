@@ -2,18 +2,17 @@
 
 namespace movi\Application\UI;
 
-use movi\Application\Application;
-use movi\Localization\Language;
+use movi\Localization\Languages;
 use movi\Localization\Translator;
-use movi\Packages\Settings\Services\Settings;
 use movi\Templating\Helpers;
 use movi\Templating\TemplateManager;
 use Nette\DI\Container;
+use movi\Model\Entities\Language;
 
 abstract class Presenter extends \Nette\Application\UI\Presenter
 {
 
-	/** @var \movi\Localization\Language */
+	/** @var Language */
 	protected $language;
 
 	/** @var \movi\Localization\Translator */
@@ -25,19 +24,15 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	/** @var array */
 	protected $languages;
 
-	/** @var Settings */
-	protected $settings;
-
 	/** @var TemplateManager */
 	protected $templateManager;
 
 
-	public function injectServices(Language $language, Translator $translator, Settings $settings)
+	public function injectServices(Languages $languages, Translator $translator)
 	{
-		$this->language = $language;
+		$this->languages = $languages->getLanguages();
+		$this->language = $languages->getLanguage();
 		$this->translator = $translator;
-		$this->settings = $settings;
-		$this->languages = Application::$languages;
 	}
 
 
@@ -114,15 +109,6 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	public function getHelpers()
 	{
 		return $this->helpers;
-	}
-
-
-	/**
-	 * @return Settings
-	 */
-	public function getSettings()
-	{
-		return $this->settings;
 	}
 
 
