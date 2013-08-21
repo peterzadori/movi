@@ -24,11 +24,11 @@ final class Languages extends Object
 	public function __construct(Language $language, LanguagesRepository $languagesRepository)
 	{
 		$this->languages = $languagesRepository->findActive();
+		$this->current = $language;
 
 		foreach ($this->languages as $language)
 		{
 			if ($language->default === true) {
-				$this->current = $language;
 				$this->default = $language;
 
 				$this->setCurrent($language);
