@@ -35,9 +35,6 @@ final class moviExtension extends CompilerExtension
 		$builder->getDefinition('nette.presenterFactory')
 			->setClass('movi\Application\PresenterFactory', array($builder->parameters['appDir']));
 
-		$builder->getDefinition('application')
-			->setClass('movi\Application\Application');
-
 		$builder->addDefinition($this->prefix('cacheProvider'))
 			->setClass('movi\Caching\CacheProvider');
 
