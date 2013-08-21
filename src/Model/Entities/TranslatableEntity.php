@@ -2,9 +2,6 @@
 
 namespace movi\Model\Entities;
 
-/**
- * @property Language $language m:hasOne
- */
 abstract class TranslatableEntity extends IdentifiedEntity
 {
 
