@@ -38,8 +38,6 @@ abstract class Tree extends Object
     public function setRepository(Repository $repository)
     {
         $this->repository = $repository;
-
-        $this->build();
     }
 
 
@@ -183,7 +181,6 @@ abstract class Tree extends Object
      */
     public function traverseTree($children, $callback)
     {
-
         if (count($children) > 0) {
             foreach ($children as $child)
             {
@@ -262,11 +259,11 @@ abstract class Tree extends Object
 		while ($parent->parent !== NULL) {
 			$parent = $this->getNode($parent->parent->id);
 
-			$path[] = $parent;
+			$path[] = $parent->path;
 		}
 
 		krsort($path);
-		$path[] = $node;
+		$path[] = $node->path;
 
 		return $path;
 	}
