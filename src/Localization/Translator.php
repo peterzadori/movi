@@ -20,8 +20,8 @@ final class Translator implements ITranslator, Subscriber
 	/** @var string */
 	private $appDir;
 
-	/** @var \movi\Localization\Languages */
-	private $languages;
+	/** @var \movi\Localization\Language */
+	private $language;
 
 	/** @var array */
 	private $translations;
@@ -30,10 +30,10 @@ final class Translator implements ITranslator, Subscriber
 	private $cache;
 
 
-	public function __construct($appDir, Languages $languages, CacheProvider $cacheProvider)
+	public function __construct($appDir, Language $language, CacheProvider $cacheProvider)
 	{
 		$this->appDir = $appDir;
-		$this->languages = $languages;
+		$this->language = $language;
 		$this->cache = $cacheProvider->create('movi.translations');
 	}
 
@@ -77,7 +77,7 @@ final class Translator implements ITranslator, Subscriber
 	public function translate($message, $count = NULL)
 	{
 		// Language must be set
-		if ($this->languages->isLanguageSet()) {
+		if ($this->language->isLanguageSet()) {
 			if (isset($this->translations) && array_key_exists($message, $this->translations)) {
 				return $this->translations[$message];
 			}
@@ -94,7 +94,7 @@ final class Translator implements ITranslator, Subscriber
 	 */
 	public function translatePresenter($presenter, $way = 'out')
 	{
-		if ($this->languages->isLanguageSet() && isset($this->translations[self::PRESENTERS])) {
+		if ($this->language->isLanguageSet() && isset($this->translations[self::PRESENTERS])) {
 			$presenters = $this->translations[self::PRESENTERS];
 			$presenter = strtolower($presenter);
 
@@ -127,17 +127,17 @@ final class Translator implements ITranslator, Subscriber
 	 */
 	private function process(array &$translations = NULL)
 	{
-        if ($translations !== NULL) {
-            $presenters = array();
+		if ($translations !== NULL) {
+			$presenters = array();
 
-            if (isset($translations[self::PRESENTERS])) {
-                $presenters = $translations[self::PRESENTERS];
-                unset($translations[self::PRESENTERS]);
-            }
+			if (isset($translations[self::PRESENTERS])) {
+				$presenters = $translations[self::PRESENTERS];
+				unset($translations[self::PRESENTERS]);
+			}
 
-            $translations = $this->flatten($translations);
-            $translations[self::PRESENTERS] = $presenters;
-        }
+			$translations = $this->flatten($translations);
+			$translations[self::PRESENTERS] = $presenters;
+		}
 	}
 
 

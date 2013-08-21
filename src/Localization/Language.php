@@ -41,4 +41,13 @@ final class Language extends Object
 		return $this->language;
 	}
 
+
+	/**
+	 * @return bool
+	 */
+	public function isLanguageSet()
+	{
+		return ($this->language === NULL) ? false : true;
+	}
+
 }
