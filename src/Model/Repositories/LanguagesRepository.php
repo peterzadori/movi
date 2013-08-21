@@ -16,9 +16,6 @@ use movi\Model\Entities\Language;
 final class LanguagesRepository extends Repository
 {
 
-	/** @var string  */
-	private $suffix = 'translations';
-
 	/** @var \Nette\Http\Request  */
 	private $request;
 
