@@ -111,7 +111,6 @@ abstract class TranslationsRepository extends Repository
 		// Translation
 		$translation = array_intersect_key($entity->getModifiedRowData(), $entity->getTranslatableColumns());
 		$translation[$translationsViaColumn] = $id;
-		$translation[$languageColumn] = $this->language->id;
 
 		if ($entity->isDetached()) {
 			foreach ($this->languagesRepository->findAll() as $language)
