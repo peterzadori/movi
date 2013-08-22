@@ -28,7 +28,7 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	protected $templateManager;
 
 
-	public function injectServices(Languages $languages, Translator $translator)
+	public function injectLocalization(Languages $languages, Translator $translator)
 	{
 		$this->languages = $languages->getLanguages();
 		$this->language = $languages->getLanguage();
@@ -48,6 +48,21 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 		if ($context && $this->invalidLinkMode === NULL) {
 			$this->invalidLinkMode = $context->parameters['productionMode'] ? self::INVALID_LINK_SILENT : self::INVALID_LINK_WARNING;
 		}
+	}
+
+
+	/**
+	 * @param null $class
+	 * @return \Nette\Templating\ITemplate
+	 */
+	protected function createTemplate($class = NULL)
+	{
+		$template = parent::createTemplate($class);
+
+		$template->setTranslator($this->translator);
+		$template->registerHelperLoader(callback($this->helpers, 'loader'));
+
+		return $template;
 	}
 
 
@@ -75,22 +90,6 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	public function getLanguage()
 	{
 		return $this->language;
-	}
-
-
-	/**
-	 * @return null|Language
-	 */
-	public function getDefaultLanguage()
-	{
-		foreach ($this->languages as $language)
-		{
-			if ($language->default == true) {
-				return $language;
-			}
-		}
-
-		return NULL;
 	}
 
 
