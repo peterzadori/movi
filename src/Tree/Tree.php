@@ -284,7 +284,9 @@ abstract class Tree extends Object
 		// Return only paths
 		$path = array();
 
+		$node = $this->getRow($node);
 		$parent = $node;
+
 		while ($parent->parent_id !== NULL) {
 			$parent = $this->getRow($parent->parent_id);
 
