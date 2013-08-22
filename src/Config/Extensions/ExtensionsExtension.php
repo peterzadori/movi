@@ -2,9 +2,9 @@
 
 namespace movi\Config\Extensions;
 
-use Nette;
+use movi\Config\CompilerExtension;
 
-final class ExtensionsExtension extends Nette\Config\CompilerExtension
+final class ExtensionsExtension extends CompilerExtension
 {
 
 	public function loadConfiguration()

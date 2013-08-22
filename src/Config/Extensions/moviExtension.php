@@ -2,10 +2,12 @@
 
 namespace movi\Config\Extensions;
 
-use Nette\Config\CompilerExtension;
+use movi\Config\CompilerExtension;
+use Nette\DI\ContainerBuilder;
 use Nette\Utils\PhpGenerator\ClassType;
 use Nette\Config\Compiler;
 use LeanMapper\Connection;
+use Nette\Utils\Validators;
 
 final class moviExtension extends CompilerExtension
 {
@@ -19,7 +21,9 @@ final class moviExtension extends CompilerExtension
 		'password' => array(
 			'salt' => NULL,
 			'algorithm' => 'sha512'
-		));
+		),
+		'macros' => array()
+	);
 
 
 	public function loadConfiguration()
@@ -38,29 +42,31 @@ final class moviExtension extends CompilerExtension
 		$builder->addDefinition($this->prefix('cacheProvider'))
 			->setClass('movi\Caching\CacheProvider');
 
-		$this->initDatabase();
+		$this->initDatabase($builder);
 
-		$this->initLocalization();
+		$this->initLocalization($builder);
 
-		$this->initTemplating();
+		$this->initTemplating($builder, $config);
 
-		$this->initSecurity();
+		$this->initSecurity($builder, $config);
 
-		$this->initWidgets();
+		$this->initWidgets($builder);
 
-		$this->initAssets();
+		$this->initAssets($builder);
 	}
 
 
 	public function beforeCompile()
 	{
-		$this->registerRepositories();
+		$builder = $this->getContainerBuilder();
 
-		$this->registerWidgets();
+		$this->registerRepositories($builder);
 
-		$this->registerHelpers();
+		$this->registerWidgets($builder);
 
-		$this->registerRoutes();
+		$this->registerHelpers($builder);
+
+		$this->registerRoutes($builder);
 	}
 
 
@@ -76,9 +82,8 @@ final class moviExtension extends CompilerExtension
 	}
 
 
-	private function registerRoutes()
+	private function registerRoutes(ContainerBuilder $builder)
 	{
-		$builder = $this->getContainerBuilder();
 		$router = $builder->getDefinition('router');
 
 		foreach($this->getSortedServices('route') as $route)
@@ -91,12 +96,13 @@ final class moviExtension extends CompilerExtension
 	}
 
 
-	private function initDatabase()
+	private function initDatabase(ContainerBuilder $builder)
 	{
-		$builder = $this->getContainerBuilder();
-
 		$connection = $builder->addDefinition($this->prefix('connection'))
 			->setClass('LeanMapper\Connection', array('%database%'));
+
+		$builder->addDefinition($this->prefix('mapper'))
+			->setClass('movi\Model\Mapper');
 
 		$translateFilter = $builder->addDefinition($this->prefix('translateFilter'))
 			->setClass('movi\Model\Filters\TranslateFilter');
@@ -120,15 +126,11 @@ final class moviExtension extends CompilerExtension
 				'modify'
 			)
 		));
-
-		$builder->addDefinition($this->prefix('mapper'))
-			->setClass('movi\Model\Mapper');
 	}
 
 
-	private function registerRepositories()
+	private function registerRepositories(ContainerBuilder $builder)
 	{
-		$builder = $this->getContainerBuilder();
 		$mapper = $builder->getDefinition($this->prefix('mapper'));
 
 		foreach(array_keys($builder->findByTag('repository')) as $helper)
@@ -144,10 +146,8 @@ final class moviExtension extends CompilerExtension
 	}
 
 
-	private function initLocalization()
+	private function initLocalization(ContainerBuilder $builder)
 	{
-		$builder = $this->getContainerBuilder();
-
 		$builder->addDefinition($this->prefix('languagesRepository'))
 			->setClass('movi\Model\Repositories\LanguagesRepository')
 			->addSetup('setLocalDir', array('%localDir%'))
@@ -166,10 +166,8 @@ final class moviExtension extends CompilerExtension
 	}
 
 
-	private function initTemplating()
+	private function initTemplating(ContainerBuilder $builder, $config)
 	{
-		$builder = $this->getContainerBuilder();
-
 		$builder->addDefinition($this->prefix('templateManager'))
 			->setClass('movi\Templating\TemplateManager', array('%templatesDir%'));
 
@@ -180,12 +178,24 @@ final class moviExtension extends CompilerExtension
 			->setClass('movi\Templating\Helpers\ThumbnailHelper', array('%wwwDir%'))
 			->addTag('helper')
 			->addTag('name', 'thumbnail');
+
+		$latte = $builder->getDefinition('nette.latte');
+		$latte->addSetup('movi\Templating\Macros\moviMacros::install(?->compiler)', array('@self'));
+
+		foreach ($config['macros'] as $macro) {
+			if (strpos($macro, '::') === FALSE && class_exists($macro)) {
+				$macro .= '::install';
+			} else {
+				Validators::isCallable($macro);
+			}
+
+			$latte->addSetup($macro . '(?->compiler)', array('@self'));
+		}
 	}
 
 
-	private function registerHelpers()
+	private function registerHelpers(ContainerBuilder $builder)
 	{
-		$builder = $this->getContainerBuilder();
 		$helpers = $builder->getDefinition($this->prefix('helpers'));
 
 		foreach(array_keys($builder->findByTag('helper')) as $helper)
@@ -198,11 +208,8 @@ final class moviExtension extends CompilerExtension
 	}
 
 
-	private function initSecurity()
+	private function initSecurity(ContainerBuilder $builder, $config)
 	{
-		$builder = $this->getContainerBuilder();
-		$config = $this->getConfig($this->defaults);
-
 		// Password
 		$builder->addDefinition($this->prefix('password'))
 			->setClass('movi\Tools\Password', array($config['password']['salt'], $config['password']['algorithm']));
@@ -215,19 +222,16 @@ final class moviExtension extends CompilerExtension
 	}
 
 
-	private function initWidgets()
+	private function initWidgets(ContainerBuilder $builder)
 	{
-		$builder = $this->getContainerBuilder();
-
 		$builder->addDefinition($this->prefix('widgets'))
 			->setClass('movi\Components\Widgets')
 			->setShared(false);
 	}
 
 
-	private function registerWidgets()
+	private function registerWidgets(ContainerBuilder $builder)
 	{
-		$builder = $this->getContainerBuilder();
 		$widgets = $builder->getDefinition($this->prefix('widgets'));
 
 		foreach(array_keys($builder->findByTag('widget')) as $widget)
@@ -240,10 +244,8 @@ final class moviExtension extends CompilerExtension
 	}
 
 
-	private function initAssets()
+	private function initAssets(ContainerBuilder $builder)
 	{
-		$builder = $this->getContainerBuilder();
-
 		$builder->addDefinition('assets')
 			->setClass('movi\Components\Assets\AssetsManager', array('%resourcesDir%'));
 
@@ -254,27 +256,6 @@ final class moviExtension extends CompilerExtension
 		$builder->addDefinition($this->prefix('assetsCommand'))
 			->setClass('movi\Console\Commands\AssetsCommand')
 			->addTag('kdyby.console.command');
-	}
-
-
-	private function getSortedServices($tag)
-	{
-		$builder = $this->getContainerBuilder();
-		$sorted = array();
-
-		foreach(array_keys($builder->findByTag($tag)) as $service)
-		{
-			$definition = $builder->getDefinition($service);
-			$tags = $definition->tags;
-
-			if (isset($tags['priority'])) {
-				$sorted[$tags['priority']] = $service;
-			}
-		}
-
-		ksort($sorted);
-
-		return $sorted;
 	}
 
 }

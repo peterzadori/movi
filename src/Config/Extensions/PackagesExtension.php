@@ -2,7 +2,7 @@
 
 namespace movi\Config\Extensions;
 
-use Nette\Config\CompilerExtension;
+use movi\Config\CompilerExtension;
 use Nette\Config\Helpers;
 use movi\InvalidArgumentException;
 use movi\Packages\BasePackage;
@@ -29,7 +29,7 @@ final class PackagesExtension extends CompilerExtension
 			->addTag('installer');
 
 		// Process packages
-		$this->processPackages();
+		$this->processPackages($builder);
 	}
 
 
@@ -53,9 +53,12 @@ final class PackagesExtension extends CompilerExtension
 	}
 
 
-	private function processPackages()
+	/**
+	 * @param ContainerBuilder $builder
+	 * @throws \movi\InvalidArgumentException
+	 */
+	private function processPackages(ContainerBuilder $builder)
 	{
-		$builder = $this->getContainerBuilder();
 		$manager = $builder->getDefinition($this->prefix('manager'));
 		$packages = $builder->parameters['packages']; // array
 
@@ -90,6 +93,9 @@ final class PackagesExtension extends CompilerExtension
 	}
 
 
+	/**
+	 * @param Package $package
+	 */
 	private function processExtensions(Package $package)
 	{
 		if (count($package->extensions) > 0) {
