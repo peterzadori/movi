@@ -3,7 +3,7 @@
 namespace movi\Components\Grid;
 
 use movi\InvalidArgumentException;
-use movi\Model\Entities\Entity;
+use movi\Model\Entity;
 use Nette\Callback;
 use Nette\Utils\Html;
 

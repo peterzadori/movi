@@ -4,7 +4,7 @@ namespace movi\Model;
 
 use Kdyby\Events\EventManager;
 use LeanMapper\Connection;
-use movi\Model\Entities\Entity;
+use movi\Model\Entity;
 use LeanMapper\Fluent;
 use LeanMapper\IMapper;
 use movi\EntityNotFound;

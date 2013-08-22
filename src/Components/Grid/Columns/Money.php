@@ -2,7 +2,7 @@
 
 namespace movi\Components\Grid\Columns;
 
-use movi\Model\Entities\Entity;
+use movi\Model\Entity;
 
 class Money extends Column
 {
