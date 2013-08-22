@@ -37,11 +37,11 @@ abstract class TranslationsRepository extends Repository
 
 
 	/**
-	 * @param Entity $entity
+	 * @param \LeanMapper\Entity $entity
 	 * @return mixed|void
 	 * @throws \movi\InvalidArgumentException
 	 */
-	public function persist(Entity $entity)
+	public function persist(\LeanMapper\Entity $entity)
 	{
 		if (!($entity instanceof TranslatableEntity)) {
 			throw new InvalidArgumentException('Only translatable entities can be persisted.');
@@ -52,10 +52,10 @@ abstract class TranslationsRepository extends Repository
 
 
 	/**
-	 * @param Entity $entity
+	 * @param \LeanMapper\Entity $entity
 	 * @return int|mixed
 	 */
-	protected function insertIntoDatabase(Entity $entity)
+	protected function insertIntoDatabase(\LeanMapper\Entity $entity)
 	{
 		/** @var TranslatableEntity $entity */
 		$table = $this->getTable();
@@ -75,10 +75,10 @@ abstract class TranslationsRepository extends Repository
 
 
 	/**
-	 * @param Entity $entity
+	 * @param \LeanMapper\Entity $entity
 	 * @return mixed|void
 	 */
-	protected function updateInDatabase(Entity $entity)
+	protected function updateInDatabase(\LeanMapper\Entity $entity)
 	{
 		/** @var TranslatableEntity $entity */
 		$table = $this->getTable();
