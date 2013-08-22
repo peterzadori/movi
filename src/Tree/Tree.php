@@ -7,6 +7,7 @@ use Nette\Object;
 use movi\Model\Repositories\Repository;
 use movi\Tree\NodeNotFound;
 use movi\InvalidStateException;
+use movi\Model\Entities\Entity;
 
 abstract class Tree extends Object
 {
@@ -15,6 +16,9 @@ abstract class Tree extends Object
 
 	/** @var \movi\Model\Repositories\Repository */
 	protected $repository;
+
+	/** @var array */
+	protected $rows = array();
 
 	/** @var array */
 	protected $nodes = array();
@@ -39,6 +43,8 @@ abstract class Tree extends Object
     public function setRepository(Repository $repository)
     {
         $this->repository = $repository;
+
+		$this->build();
     }
 
 
@@ -59,7 +65,8 @@ abstract class Tree extends Object
 			{
 				$row = ArrayHash::from($node->getRowData());
 
-				$this->nodes[$row->id] = $row;
+				$this->nodes[$row->id] = $node;
+				$this->rows[$row->id] = $row;
 
 				if ($row->parent_id === NULL) {
 					$this->parents[$row->id] = $row;
@@ -72,8 +79,6 @@ abstract class Tree extends Object
 
 			$this->onBuild($this);
 		}
-
-		return $this->nodes;
 	}
 
 
@@ -83,6 +88,7 @@ abstract class Tree extends Object
 	public function rebuild()
 	{
 		$this->built = false;
+		$this->rows = array();
 		$this->nodes = array();
 		$this->parents = array();
 		$this->children = array();
@@ -93,7 +99,7 @@ abstract class Tree extends Object
 
 	/**
 	 * @param $id
-	 * @return null
+	 * @return Entity|NULL
 	 */
 	public function getNode($id)
 	{
@@ -115,6 +121,24 @@ abstract class Tree extends Object
 
 
 	/**
+	 * @param $id
+	 * @return ArrayHash
+	 */
+	public function getRow($id)
+	{
+		if ($id instanceof Entity) {
+			$id = $id->id;
+		}
+
+		if (isset($this->rows[$id])) {
+			return $this->rows[$id];
+		} else {
+			return NULL;
+		}
+	}
+
+
+	/**
 	 * @param null $node
 	 * @return array
 	 */
@@ -124,10 +148,11 @@ abstract class Tree extends Object
 			return $this->parents;
 		}
 
+		$node = $this->getRow($node);
 		$parents = array();
 
 		while ($node->parent_id !== NULL) {
-			$node = $this->getNode($node->parent_id);
+			$node = $this->getRow($node->parent_id);
 
 			$parents[$node->id] = $node;
 		}
@@ -167,7 +192,7 @@ abstract class Tree extends Object
 		if (count($children) > 0) {
 			foreach ($children as $id => $child)
 			{
-				$tree[$id] = $child;
+				$tree[$id] = $this->getNode($id);
 
 				$this->getChildrenRecursively($child, $tree);
 			}
@@ -186,6 +211,8 @@ abstract class Tree extends Object
         if (count($children) > 0) {
             foreach ($children as $id => $child)
             {
+				$child = $this->getNode($id);
+
                 $callback($child);
 
                 if (array_key_exists($id, $this->children)) {
@@ -259,7 +286,7 @@ abstract class Tree extends Object
 
 		$parent = $node;
 		while ($parent->parent_id !== NULL) {
-			$parent = $this->getNode($parent->parent_id);
+			$parent = $this->getRow($parent->parent_id);
 
 			$path[] = $parent->path;
 		}
@@ -289,6 +316,7 @@ abstract class Tree extends Object
 					continue;
 				}
 
+				$child = $this->getNode($id);
 				$tree[$id] = $child;
 
 				if (array_key_exists($id, $this->children)) {
@@ -327,6 +355,7 @@ abstract class Tree extends Object
 					}
 				}
 
+				$child = $this->getNode($id);
 				$branch[$id] = $child;
 			}
 		}
@@ -376,8 +405,9 @@ abstract class Tree extends Object
 		$this->onDelete($node);
 
 		if (array_key_exists($node->id, $this->children)) {
-			foreach (array_values($this->children[$node->id]) as $child)
+			foreach ($this->children[$node->id] as $id => $child)
 			{
+				$child = $this->getNode($id);
 				$this->delete($child);
 			}
 		}
