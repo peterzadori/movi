@@ -43,8 +43,6 @@ abstract class Tree extends Object
     public function setRepository(Repository $repository)
     {
         $this->repository = $repository;
-
-		$this->build();
     }
 
 
