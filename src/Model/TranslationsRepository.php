@@ -4,7 +4,6 @@ namespace movi\Model;
 
 use Kdyby\Events\EventManager;
 use LeanMapper\Connection;
-use LeanMapper\Entity;
 use LeanMapper\IMapper;
 use movi\InvalidArgumentException;
 use movi\Localization\Languages;
