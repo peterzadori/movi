@@ -150,6 +150,7 @@ final class moviExtension extends CompilerExtension
 
 		$builder->addDefinition($this->prefix('languagesRepository'))
 			->setClass('movi\Model\Repositories\LanguagesRepository')
+			->addSetup('setLocalDir', array('%localDir%'))
 			->addTag('repository');
 
 		$builder->addDefinition($this->prefix('language'))

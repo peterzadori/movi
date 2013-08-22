@@ -2,6 +2,8 @@
 
 namespace movi\Model\Entities;
 
+use Nette\Utils\Strings;
+
 /**
  * Class Language
  * @package movi\Model\Entities
@@ -13,5 +15,10 @@ namespace movi\Model\Entities;
  */
 final class Language extends IdentifiedEntity
 {
+
+	public function setCode($code)
+	{
+		$this->row->code = Strings::lower($code);
+	}
 
 }

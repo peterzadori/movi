@@ -2,6 +2,8 @@
 
 namespace movi\Model\Repositories;
 
+use movi\InvalidArgumentException;
+use movi\Model\Entities\Language;
 use Nette\Utils\Strings;
 
 /**
@@ -13,6 +15,45 @@ use Nette\Utils\Strings;
 final class LanguagesRepository extends Repository
 {
 
+	/** @var string */
+	private $localDir;
+
+
+	protected function initEvents()
+	{
+		$this->onBeforePersist[] = function(Language $language) {
+			if ($language->default === true && $language->active === false) {
+				throw new InvalidArgumentException('Jazyk nemôže byť predvolený, ak nie je aktívny.');
+			}
+
+			if ($language->default === true) {
+				$this->connection->update('languages', array('default' => false))->execute();
+			}
+		};
+
+		$this->onBeforeInsert[] = function(Language $language) {
+			$fp = fopen(sprintf('%s/%s.neon', $this->localDir, $language->code), 'w');
+			fclose($fp);
+		};
+
+		$this->onAfterDelete[] = function(Language $language) {
+			@unlink(sprintf('%s/%s.neon', $this->localDir, $language->code));
+		};
+	}
+
+
+	/**
+	 * @param $dir
+	 * @return $this
+	 */
+	public function setLocalDir($dir)
+	{
+		$this->localDir = $dir;
+
+		return $this;
+	}
+
+
 	/**
 	 * @return array
 	 */
@@ -20,23 +61,5 @@ final class LanguagesRepository extends Repository
 	{
 		return $this->findAll(array('[active] = %i' => true));
 	}
-
-
-	/*
-	public function beforePersist(array $values)
-	{
-		$values['code'] = Strings::lower($values['code']);
-
-		if ($values['default'] == true && $values['active'] == false) {
-			throw new InvalidArgumentException('Jazyk nemôže byť predvolený, ak nie je aktívny.');
-		}
-
-		if ($values['default'] == true) {
-			$this->connection->update('languages', array('default' => false))->execute();
-		}
-
-		return $values;
-	}
-	*/
 
 }
