@@ -51,7 +51,7 @@ class Boolean extends Column
 	/**
 	 * @param Entity $row
 	 */
-	public function render(Entity $row)
+	public function render($row)
 	{
 		$el = Html::el('i');
 

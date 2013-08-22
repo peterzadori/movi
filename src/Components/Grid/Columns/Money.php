@@ -7,7 +7,7 @@ use LeanMapper\Entity;
 class Money extends Column
 {
 
-	public function render(Entity $row)
+	public function render($row)
 	{
 		echo number_format($row->{$this->column}, 2, '.', '');
 	}

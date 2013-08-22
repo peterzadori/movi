@@ -60,7 +60,7 @@ class Column extends Component
 	}
 
 
-	public function render(Entity $row)
+	public function render($row)
 	{
 		echo $this->renderer->__invoke($row);
 	}
