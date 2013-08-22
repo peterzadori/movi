@@ -2,10 +2,10 @@
 
 namespace movi\Components\Grid\Columns;
 
-use LeanMapper\Entity;
 use movi\Components\Grid\Component;
 use movi\Components\Grid\Filters\Filter;
 use movi\InvalidArgumentException;
+use movi\Model\Entities\Entity;
 use Nette\Callback;
 use Nette\Utils\Html;
 
@@ -60,7 +60,7 @@ class Column extends Component
 	}
 
 
-	public function render($row)
+	public function render(Entity $row)
 	{
 		echo $this->renderer->__invoke($row);
 	}

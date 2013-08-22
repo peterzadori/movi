@@ -2,8 +2,8 @@
 
 namespace movi\Components\Grid;
 
-use LeanMapper\Entity;
 use movi\InvalidArgumentException;
+use movi\Model\Entities\Entity;
 use Nette\Callback;
 use Nette\Utils\Html;
 
@@ -49,9 +49,9 @@ class Button extends Component
 
 
 	/**
-	 * @param $row
+	 * @param Entity $row
 	 */
-	public function render($row)
+	public function render(Entity $row)
 	{
 		$button = Html::el('a');
 		$button->class[] = 'btn';
