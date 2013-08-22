@@ -16,9 +16,8 @@ final class Translator implements ITranslator, Subscriber
 		OUT = 'out',
 		PRESENTERS = 'presenters';
 
-
 	/** @var string */
-	private $appDir;
+	private $localDir;
 
 	/** @var \movi\Localization\Language */
 	private $language;
@@ -30,9 +29,9 @@ final class Translator implements ITranslator, Subscriber
 	private $cache;
 
 
-	public function __construct($appDir, Language $language, CacheProvider $cacheProvider)
+	public function __construct($localDir, Language $language, CacheProvider $cacheProvider)
 	{
-		$this->appDir = $appDir;
+		$this->localDir = $localDir;
 		$this->language = $language;
 		$this->cache = $cacheProvider->create('movi.translations');
 	}
@@ -49,23 +48,22 @@ final class Translator implements ITranslator, Subscriber
 	 */
 	public function onSet(LanguageEntity $language)
 	{
-		if ($this->cache->load($language->code) === NULL) {
-			$file = sprintf('%s/local/%s.neon', $this->appDir, $language->code);
+		if ($this->cache->load($language->id) === NULL) {
+			$file = sprintf('%s/%s.neon', $this->localDir, $language->code);
+			$translations = array();
 
 			if (file_exists($file) && is_readable($file)) {
 				$translations = Neon::decode(file_get_contents($file));
 
 				$this->process($translations);
-			} else {
-				$translations = array();
 			}
 
-			$this->cache->save($language->code, $translations, array(
+			$this->cache->save($language->id, $translations, array(
 				Cache::FILES => $file
 			));
 		}
 
-		$this->translations = $this->cache->load($language->code);
+		$this->translations = $this->cache->load($language->id);
 	}
 
 
@@ -78,7 +76,7 @@ final class Translator implements ITranslator, Subscriber
 	{
 		// Language must be set
 		if ($this->language->isLanguageSet()) {
-			if (isset($this->translations) && array_key_exists($message, $this->translations)) {
+			if (array_key_exists($message, $this->translations)) {
 				return $this->translations[$message];
 			}
 		}
