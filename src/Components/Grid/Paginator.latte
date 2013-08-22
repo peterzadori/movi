@@ -1,4 +1,4 @@
-<div class="pagination pagination-right pull-right">
+<div class="pagination pagination-right pull-right" n:if="$paginator->pageCount > 1">
 	<ul>
 		{if $paginator->isFirst()}
 			<li class="disabled"><span>&laquo;</span></li>
@@ -12,7 +12,8 @@
 			{else}
 				<li><a href="{link this, 'page' => $step}" class="ajax">{$step}</a></li>
 			{/if}
-			{if $iterator->nextValue > $step + 1}<li><span>...</span></li>{/if}
+
+			<li n:if="$iterator->nextValue > $step + 1"><span>...</span></li>
 		{/foreach}
 
 		{if $paginator->isLast()}

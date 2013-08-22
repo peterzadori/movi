@@ -10,6 +10,7 @@ use movi\Components\Grid\Columns\Date;
 use movi\Components\Grid\Columns\Email;
 use movi\Components\Grid\Columns\Money;
 use movi\Components\Grid\Filters\Filter;
+use movi\Components\Paginator;
 use movi\InvalidArgumentException;
 use Nette\Application\UI\Presenter;
 use Nette\ArrayHash;
@@ -182,7 +183,7 @@ class Grid extends Control
 		}
 
 		// Check column
-		list($column, $sort) = $this->sorting;
+		list($column) = $this->sorting;
 
 		if ($column != $this->primaryKey) {
 			$column = $this['columns'][$column];
@@ -397,11 +398,11 @@ class Grid extends Control
 
 
 	/**
-	 * @return \VisualPaginator
+	 * @return Paginator
 	 */
 	protected function createComponentPaginator()
 	{
-		$paginator = new \VisualPaginator();
+		$paginator = new Paginator();
 		$paginator->setTemplateFile(__DIR__ . '/Paginator.latte');
 
 		return $paginator;
