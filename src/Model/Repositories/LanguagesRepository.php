@@ -31,7 +31,7 @@ final class LanguagesRepository extends Repository
 			}
 		};
 
-		$this->onBeforeInsert[] = function(Language $language) {
+		$this->onBeforeCreate[] = function(Language $language) {
 			$fp = fopen(sprintf('%s/%s.neon', $this->localDir, $language->code), 'w');
 			fclose($fp);
 		};
