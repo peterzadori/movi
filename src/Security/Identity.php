@@ -102,9 +102,11 @@ class Identity extends Object implements \Serializable, IIdentity
 	 * @param $key
 	 * @return mixed
 	 */
-	public function __get($key)
+	public function &__get($key)
 	{
-		return $this->user->{$key};
+		$value = $this->user->{$key};
+
+		return $value;
 	}
 
 
