@@ -4,17 +4,17 @@ namespace movi\Tree;
 
 use Nette\ArrayHash;
 use Nette\Object;
-use movi\Model\Repositories\Repository;
+use movi\Model\Repository;
 use movi\Tree\NodeNotFound;
 use movi\InvalidStateException;
-use movi\Model\Entities\Entity;
+use movi\Model\Entity;
 
 abstract class Tree extends Object
 {
 
 	public $tab = '-';
 
-	/** @var \movi\Model\Repositories\Repository */
+	/** @var \movi\Model\Repository */
 	protected $repository;
 
 	/** @var array */

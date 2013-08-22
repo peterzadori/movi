@@ -8,7 +8,7 @@ use LeanMapper\Entity;
 use LeanMapper\IMapper;
 use movi\InvalidArgumentException;
 use movi\Localization\Languages;
-use movi\Model\Entities\TranslatableEntity;
+use movi\Model\TranslatableEntity;
 
 /**
  * @entity TranslatableEntity
@@ -16,7 +16,7 @@ use movi\Model\Entities\TranslatableEntity;
 abstract class TranslationsRepository extends Repository
 {
 
-	/** @var \movi\Model\Repositories\LanguagesRepository */
+	/** @var \movi\Localization\Languages */
 	protected $languages;
 
 

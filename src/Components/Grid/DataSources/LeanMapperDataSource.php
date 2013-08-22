@@ -2,7 +2,7 @@
 
 namespace movi\Components\Grid\DataSources;
 
-use movi\Model\Repositories\Repository;
+use movi\Model\Repository;
 use movi\Components\Grid\IDataSource;
 
 class LeanMapperDataSource implements IDataSource
