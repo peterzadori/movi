@@ -1,6 +1,6 @@
 {form form}
 	<fieldset>
-		<legend>{$control->legend}</legend>
+		<legend>{$legend}</legend>
 
 		<p>
 			{input file, id => 'uploadify-file'}
@@ -22,13 +22,13 @@
 			uploader: {link upload},
 			auto: {$auto},
 			buttonText: {$buttonText},
+			debug: {$debug},
 			{if !empty($fileTypeExts)}
 			fileTypeExts: {$fileTypeExts},
 			{/if}
 			{if !empty($fileTypeDesc)}
 			fileTypeDesc: {$fileTypeDesc},
 			{/if}
-
 			onUploadSuccess: function() {
 				$.nette.ajax({
 					url: {link success}

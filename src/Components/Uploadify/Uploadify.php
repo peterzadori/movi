@@ -2,14 +2,20 @@
 
 namespace movi\Components;
 
-use Nette;
-use movi;
+use movi\Application\UI\Control;
+use movi\Application\UI\Form;
+use movi\Application\UI\Presenter;
+use Nette\Http\FileUpload;
+use Nette\Http\IRequest;
 
-final class Uploadify extends Nette\Application\UI\Control
+final class Uploadify extends Control
 {
 
+	/** @var IRequest */
+	private $httpRequest;
+
 	/** @var bool */
-	private $debug;
+	private $debug = false;
 
 	/** @var string */
 	private $swf = 'uploadify.swf';
@@ -37,15 +43,17 @@ final class Uploadify extends Nette\Application\UI\Control
 
 	public function attached($presenter)
 	{
-		if ($presenter instanceOf Nette\Application\IPresenter) {
-			$this->debug = $presenter->context->params['debugMode'];
+		parent::attached($presenter);
+
+		if ($presenter instanceof Presenter) {
+			$this->httpRequest = $presenter->context->getByType('Nette\Http\IRequest');
 		}
 	}
 
 
 	public function handleUpload()
 	{
-		$file = new Nette\Http\FileUpload($_FILES['Filedata']);
+		$file = $this->httpRequest->getFile('Filedata');
 
 		if ($file->isOk()) {
 			$this->onUpload($file);
@@ -71,6 +79,9 @@ final class Uploadify extends Nette\Application\UI\Control
 		$template->swf = $this->swf;
 		$template->auto = $this->auto;
 		$template->debug = $this->debug;
+
+		$template->legend = $this->legend;
+		$template->debug = $this->debug;
 		$template->fileTypeExts = $this->fileTypeExts;
 		$template->fileTypeDesc = $this->fileTypeDesc;
 		$template->buttonText = $this->buttonText;
@@ -79,9 +90,12 @@ final class Uploadify extends Nette\Application\UI\Control
 	}
 
 
+	/**
+	 * @return Form
+	 */
 	protected function createComponentForm()
 	{
-		$form = new movi\Application\UI\Form();
+		$form = new Form();
 
 		$form->addUpload('file', 'Súbor:');
 
@@ -90,6 +104,11 @@ final class Uploadify extends Nette\Application\UI\Control
 		return $form;
 	}
 
+
+	/**
+	 * @param $legend
+	 * @return $this
+	 */
 	public function setLegend($legend)
 	{
 		$this->legend = $legend;
@@ -98,12 +117,10 @@ final class Uploadify extends Nette\Application\UI\Control
 	}
 
 
-	public function getLegend()
-	{
-		return $this->legend;
-	}
-
-
+	/**
+	 * @param $file
+	 * @return $this
+	 */
 	public function setSwf($file)
 	{
 		$this->swf = $file;
@@ -112,12 +129,10 @@ final class Uploadify extends Nette\Application\UI\Control
 	}
 
 
-	public function getSwf()
-	{
-		return $this->swf;
-	}
-
-
+	/**
+	 * @param $auto
+	 * @return $this
+	 */
 	public function setAuto($auto)
 	{
 		$this->auto = $auto;
@@ -126,12 +141,19 @@ final class Uploadify extends Nette\Application\UI\Control
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function isAuto()
 	{
 		return $this->auto;
 	}
 
 
+	/**
+	 * @param $text
+	 * @return $this
+	 */
 	public function setButtonText($text)
 	{
 		$this->buttonText = $text;
@@ -140,12 +162,10 @@ final class Uploadify extends Nette\Application\UI\Control
 	}
 
 
-	public function getButtonText()
-	{
-		return $this->buttonText;
-	}
-
-
+	/**
+	 * @param $extensions
+	 * @return $this
+	 */
 	public function setFileTypeExts($extensions)
 	{
 		$this->fileTypeExts = $extensions;
@@ -154,12 +174,10 @@ final class Uploadify extends Nette\Application\UI\Control
 	}
 
 
-	public function getFileTypeExts()
-	{
-		return $this->fileTypeExts;
-	}
-
-
+	/**
+	 * @param $description
+	 * @return $this
+	 */
 	public function setFileTypeDesc($description)
 	{
 		$this->fileTypeDesc = $description;
@@ -168,22 +186,14 @@ final class Uploadify extends Nette\Application\UI\Control
 	}
 
 
-	public function getFileTypeDesc()
+	/**
+	 * @param $debug
+	 * @return $this
+	 */
+	public function setDebug($debug)
 	{
-		return $this->fileTypeDesc;
-	}
+		$this->debug = $debug;
 
-
-	public function setData(array $data)
-	{
-		$this->data = $data;
-
-		return $this;
-	}
-
-
-	public function getData()
-	{
 		return $this;
 	}
 
