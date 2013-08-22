@@ -35,12 +35,11 @@ class Helpers
 	 */
 	public function loader($helper)
 	{
-		if (!isset($this->helpers[$helper])) {
-			throw new InvalidArgumentException("Unknown helper: '$helper'.");
+		if (isset($this->helpers[$helper])) {
+			return Callback::create($this->helpers[$helper], 'process');
+		} else {
+			return false;
 		}
-
-		return Callback::create($this->helpers[$helper], 'process');
 	}
-
 
 }
