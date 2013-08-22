@@ -2,6 +2,7 @@
 
 namespace movi\Templating;
 
+use Nette\Callback;
 use Nette\Utils\Strings;
 use movi\InvalidArgumentException;
 
@@ -12,27 +13,33 @@ class Helpers
 	private $helpers;
 
 
-	public function registerHelper($name, IHelper $factory)
+	/**
+	 * @param $name
+	 * @param IHelper $helper
+	 * @throws \movi\InvalidArgumentException
+	 */
+	public function registerHelper($name, IHelper $helper)
 	{
-		$name = Strings::lower($name);
-
 		if (isset($this->helpers[$name])) {
 			throw new InvalidArgumentException("Helper '$name' is already registered.");
 		}
 
-		$this->helpers[$name] = $factory;
+		$this->helpers[$name] = $helper;
 	}
 
 
+	/**
+	 * @param $helper
+	 * @return callable
+	 * @throws \movi\InvalidArgumentException
+	 */
 	public function loader($helper)
 	{
-		$helper = Strings::lower($helper);
-
 		if (!isset($this->helpers[$helper])) {
-			return;
+			throw new InvalidArgumentException("Unknown helper: '$helper'.");
 		}
 
-		return callback($this->helpers[$helper], 'process');
+		return Callback::create($this->helpers[$helper], 'process');
 	}
 
 
