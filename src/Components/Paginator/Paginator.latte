@@ -1,0 +1,23 @@
+<div class="paginator" n:if="$paginator->pageCount > 1">
+	{if $paginator->isFirst()}
+		<span class="button">&laquo;</span>
+	{else}
+		<a href="{link this, 'page' => $paginator->page - 1}">&laquo;</a>
+	{/if}
+
+	{foreach $steps as $step}
+		{if $step == $paginator->page}
+			<span class="current">{$step}</span>
+		{else}
+			<a href="{link this, 'page' => $step}">{$step}</a>
+		{/if}
+
+		<span n:if="$iterator->nextValue > $step + 1">...</span>
+	{/foreach}
+
+	{if $paginator->isLast()}
+		<span class="button">&raquo;</span>
+	{else}
+		<a href="{link this, 'page' => $paginator->page + 1}">&raquo;</a>
+	{/if}
+</div>
