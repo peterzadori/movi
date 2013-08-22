@@ -14,6 +14,10 @@ final class Language extends Object
 	public $onSet;
 
 
+	/**
+	 * @param LanguageEntity $language
+	 * @return $this
+	 */
 	public function setLanguage(LanguageEntity $language)
 	{
 		if ($this->language == NULL || $language->code != $this->language->code) {
@@ -21,6 +25,8 @@ final class Language extends Object
 
 			$this->onSet($language);
 		}
+
+		return $this;
 	}
 
 
