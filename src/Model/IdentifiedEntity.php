@@ -1,6 +1,6 @@
 <?php
 
-namespace movi\Model\Entities;
+namespace movi\Model;
 
 /**
  * @property int $id

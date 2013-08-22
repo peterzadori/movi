@@ -1,6 +1,6 @@
 <?php
 
-namespace movi\Model\Repositories;
+namespace movi\Model;
 
 use Kdyby\Events\EventManager;
 use LeanMapper\Connection;

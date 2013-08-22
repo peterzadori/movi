@@ -2,6 +2,7 @@
 
 namespace movi\Model\Entities;
 
+use movi\Model\IdentifiedEntity;
 use Nette\Utils\Strings;
 
 /**

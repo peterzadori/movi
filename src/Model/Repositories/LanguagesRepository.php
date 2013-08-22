@@ -4,6 +4,7 @@ namespace movi\Model\Repositories;
 
 use movi\InvalidArgumentException;
 use movi\Model\Entities\Language;
+use movi\Model\Repository;
 use Nette\Utils\Strings;
 
 /**
