@@ -49,9 +49,9 @@ class Button extends Component
 
 
 	/**
-	 * @param Entity $row
+	 * @param $row
 	 */
-	public function render(Entity $row)
+	public function render($row)
 	{
 		$button = Html::el('a');
 		$button->class[] = 'btn';
