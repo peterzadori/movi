@@ -90,6 +90,9 @@ class Identity extends Object implements \Serializable, IIdentity
 	}
 
 
+	/**
+	 * @param string $serialized
+	 */
 	public function unserialize($serialized)
 	{
 		$this->loaded = false;
