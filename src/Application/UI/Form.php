@@ -3,7 +3,6 @@
 namespace movi\Application\UI;
 
 use Kdyby\BootstrapFormRenderer\BootstrapRenderer;
-use Nette\Application\UI\Presenter;
 use Nette\Localization\ITranslator;
 use Nette;
 use movi;
