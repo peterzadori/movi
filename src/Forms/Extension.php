@@ -2,29 +2,16 @@
 
 namespace movi\Forms;
 
-use movi\Forms\Controls\TranslationsControl;
 use Nette\Forms\Container;
 use Nette\Forms\Form;
-use movi\Forms\Controls\MultiRadioList;
+use Kdyby;
 
 final class FormExtension
 {
 
 	public static function register()
 	{
-		Container::extensionMethod('addTranslations', function(Container $container, $name, $cb) {
-			$control = new TranslationsControl($cb);
-			$container[$name] = $control;
-
-			return $control;
-		});
-
-		Container::extensionMethod('addMultiRadioList', function(Container $container, $name, $label = NULL, $items = NULL) {
-			$control = new MultiRadioList($label, $items);
-			$container[$name] = $control;
-
-			return $control;
-		});
+		Kdyby\Replicator\Container::register();
 
 		// WYSIWYG
 		Container::extensionMethod('addWysiwyg', function(Container $container, $name, $label = NULL, $rows = NULL, $cols = NULL) {
