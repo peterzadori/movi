@@ -4,7 +4,7 @@ namespace movi\Model\Repositories;
 
 use Kdyby\Events\EventManager;
 use LeanMapper\Connection;
-use LeanMapper\Entity;
+use movi\Model\Entities\Entity;
 use LeanMapper\Fluent;
 use LeanMapper\IMapper;
 use movi\EntityNotFound;
@@ -31,40 +31,6 @@ abstract class Repository extends \LeanMapper\Repository
 	}
 
 
-	private function initKdybyEvents()
-	{
-		static $events = array(
-			Events::EVENT_BEFORE_PERSIST,
-			Events::EVENT_BEFORE_CREATE,
-			Events::EVENT_BEFORE_UPDATE,
-			Events::EVENT_BEFORE_DELETE,
-			Events::EVENT_AFTER_PERSIST,
-			Events::EVENT_AFTER_CREATE,
-			Events::EVENT_AFTER_UPDATE,
-			Events::EVENT_AFTER_DELETE,
-		);
-
-		foreach ($events as $eventName) {
-			$ns = get_called_class();
-			$event = $this->evm->createEvent($ns . '::' . $eventName);
-			$this->events->registerCallback($eventName, $event);
-		}
-	}
-
-
-	/**
-	 * @return array
-	 */
-	public function getEntities()
-	{
-		if (isset($this->getAnnotations()['entity'])) {
-			return array($this->getTable() => $this->getAnnotations()['entity'][0]);
-		} else {
-			return array();
-		}
-	}
-
-
 	/**
 	 * @return Fluent
 	 */
@@ -80,13 +46,13 @@ abstract class Repository extends \LeanMapper\Repository
 	 */
 	public function find($id)
 	{
-		return $this->findBy(array('id = %i' => $id));
+		return $this->findBy(array('[id] = %i' => $id));
 	}
 
 
 	/**
 	 * @param array $conditions
-	 * @return \LeanMapper\Entity
+	 * @return Entity
 	 * @throws \movi\EntityNotFound
 	 */
 	public function findBy(array $conditions)
@@ -115,7 +81,7 @@ abstract class Repository extends \LeanMapper\Repository
 	 * @param array $sorting
 	 * @param null $offset
 	 * @param null $limit
-	 * @return array
+	 * @return Entity[]
 	 */
 	public function findAll(array $conditions = NULL, array $sorting = array(), $offset = NULL, $limit = NULL)
 	{
@@ -141,7 +107,7 @@ abstract class Repository extends \LeanMapper\Repository
 
 	/**
 	 * @param Fluent $statement
-	 * @return array
+	 * @return Entity[]
 	 */
 	public function fetchStatement(Fluent $statement)
 	{
@@ -160,13 +126,24 @@ abstract class Repository extends \LeanMapper\Repository
 	}
 
 
-	/**
-	 * @param $method
-	 * @param $args
-	 */
-	public function __call($method, $args)
+	private function initKdybyEvents()
 	{
-		ObjectMixin::call($this, $method, $args);
+		static $events = array(
+			Events::EVENT_BEFORE_PERSIST,
+			Events::EVENT_BEFORE_CREATE,
+			Events::EVENT_BEFORE_UPDATE,
+			Events::EVENT_BEFORE_DELETE,
+			Events::EVENT_AFTER_PERSIST,
+			Events::EVENT_AFTER_CREATE,
+			Events::EVENT_AFTER_UPDATE,
+			Events::EVENT_AFTER_DELETE,
+		);
+
+		foreach ($events as $eventName) {
+			$ns = get_called_class();
+			$event = $this->evm->createEvent($ns . '::' . $eventName);
+			$this->events->registerCallback($eventName, $event);
+		}
 	}
 
 
@@ -183,6 +160,29 @@ abstract class Repository extends \LeanMapper\Repository
 		}
 
 		return $this->annotations;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getEntities()
+	{
+		if (isset($this->getAnnotations()['entity'])) {
+			return array($this->getTable() => $this->getAnnotations()['entity'][0]);
+		} else {
+			return array();
+		}
+	}
+
+
+	/**
+	 * @param $method
+	 * @param $args
+	 */
+	public function __call($method, $args)
+	{
+		ObjectMixin::call($this, $method, $args);
 	}
 
 }

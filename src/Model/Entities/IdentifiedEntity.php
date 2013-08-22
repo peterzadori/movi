@@ -2,8 +2,6 @@
 
 namespace movi\Model\Entities;
 
-use LeanMapper\Entity;
-
 /**
  * @property int $id
  */
