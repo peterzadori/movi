@@ -3,23 +3,22 @@
 namespace movi\Security;
 
 use Nette;
-use movi\Security\IUsersRepository;
 
 class UserStorage extends Nette\Http\UserStorage
 {
 
-	/** @var \movi\Security\IUsersRepository */
-	private $usersRepository;
+	/** @var IUsers */
+	private $users;
 
 	/** @var bool */
 	private $authenticated;
 
 
-	public function __construct(Nette\Http\Session $session, IUsersRepository $usersRepository)
+	public function __construct(Nette\Http\Session $session, IUsers $users)
 	{
 		parent::__construct($session);
 
-		$this->usersRepository = $usersRepository;
+		$this->users = $users;
 	}
 
 
@@ -31,7 +30,7 @@ class UserStorage extends Nette\Http\UserStorage
 		$identity = parent::getIdentity();
 
 		if ($identity instanceof Identity && !$identity->isLoaded()) {
-			$this->usersRepository->load($identity);
+			$this->users->loadIdentity($identity);
 		}
 
 		return $identity;
@@ -47,10 +46,9 @@ class UserStorage extends Nette\Http\UserStorage
 
 		if ($this->authenticated === NULL || $this->authenticated !== $authenticated) {
 			if ($authenticated === true) {
-				// Check token
 				$identity = $this->getIdentity();
 
-				if (!$this->usersRepository->isTokenValid($identity->getToken(), $identity->getId())) {
+				if (!$this->users->validateToken($identity->getToken(), $identity->getUser())) {
 					$this->getSessionSection(true)->remove(); // Logout
 
 					$authenticated = false;

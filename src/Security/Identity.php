@@ -2,9 +2,11 @@
 
 namespace movi\Security;
 
-use Nette;
+use Nette\Object;
+use Nette\Security\IIdentity;
+use movi\Model\Entities\User;
 
-class Identity extends Nette\Security\Identity implements \Serializable
+class Identity extends Object implements \Serializable, IIdentity
 {
 
 	/** @var integer */
@@ -16,8 +18,8 @@ class Identity extends Nette\Security\Identity implements \Serializable
 	/** @var string */
 	private $token;
 
-	/** @var array */
-	private $data;
+	/** @var User */
+	private $user;
 
 	/** @var bool */
 	private $loaded = false;
@@ -26,11 +28,62 @@ class Identity extends Nette\Security\Identity implements \Serializable
 	public function __construct($id, $roles = NULL, $token)
 	{
 		$this->id = $id;
-		$this->roles = $roles;
+		$this->roles = (array) $roles;
 		$this->token = $token;
 	}
 
 
+	/**
+	 * @param User $user
+	 * @return $this
+	 */
+	public function setUser(User $user)
+	{
+		$this->user = $user;
+
+		return $this;
+	}
+
+
+	/**
+	 * @return User
+	 */
+	public function getUser()
+	{
+		return $this->user;
+	}
+
+
+	/**
+	 * @return int|mixed
+	 */
+	public function getId()
+	{
+		return $this->id;
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function getRoles()
+	{
+		return $this->roles;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getToken()
+	{
+		return $this->token;
+	}
+
+
+	/**
+	 * @return string
+	 */
 	public function serialize()
 	{
 		return serialize(array($this->id, $this->roles, $this->token));
@@ -46,59 +99,23 @@ class Identity extends Nette\Security\Identity implements \Serializable
 
 
 	/**
-	 * @return null|string
-	 */
-	public function getToken()
-	{
-		return $this->token;
-	}
-
-
-	public function getId()
-	{
-		return $this->id;
-	}
-
-
-	public function getRoles()
-	{
-		return (array) $this->roles;
-	}
-
-
-	/**
 	 * @param $key
 	 * @return mixed
 	 */
-	public function &__get($key)
+	public function __get($key)
 	{
-		$value = $this->data->__get($key);
-
-		return $value;
+		return $this->user->{$key};
 	}
 
 
 	/**
-	 * @param $data
+	 * @return $this
 	 */
-	public function setData($data)
-	{
-		$this->data = $data;
-	}
-
-
-	/**
-	 * @return array
-	 */
-	public function getData()
-	{
-		return $this->data;
-	}
-
-
 	public function setLoaded()
 	{
 		$this->loaded = true;
+
+		return $this;
 	}
 
 

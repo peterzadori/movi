@@ -8,31 +8,30 @@ use Nette\Security\IAuthenticator;
 class Authenticator implements IAuthenticator
 {
 
-	/** @var \movi\Security\IUsersRepository */
-	private $usersRepository;
+	/** @var IUsers */
+	private $users;
 
 
-	public function __construct(IUsersRepository $usersRepository)
+	public function __construct(IUsers $users)
 	{
-		$this->usersRepository = $usersRepository;
+		$this->users = $users;
 	}
 
 
 	/**
 	 * @param array $credentials
-	 * @return Identity|\Nette\Security\IIdentity
+	 * @return Identity
 	 * @throws \Nette\Security\AuthenticationException
 	 */
 	public function authenticate(array $credentials)
 	{
-		// Find the user
-		$user = $this->usersRepository->login($credentials);
+		$user = $this->users->login($credentials);
 
 		if (!$user) {
-			throw new AuthenticationException('Zle zadané údaje.', self::INVALID_CREDENTIAL);
+			throw new AuthenticationException(self::INVALID_CREDENTIAL);
 		}
 
-		$token = $this->usersRepository->token($user->id);
+		$token = $this->users->generateToken($user);
 
 		return new Identity($user->id, $user->role, $token);
 	}
