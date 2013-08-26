@@ -15,11 +15,11 @@ class Control extends Nette\Application\UI\Control
 	{
 		$template = parent::createTemplate($class);
 
-		if ($this->presenter instanceOf Nette\Application\IPresenter) {
+		if ($this->presenter instanceOf Presenter) {
 			$this->presenter->templatePrepareFilters($template);
 
-			$template->setTranslator($this->presenter->translator);
-			$template->registerHelperLoader(callback($this->presenter->helpers, 'loader'));
+			$template->setTranslator($this->presenter->getTranslator());
+			$template->registerHelperLoader(callback($this->presenter->getHelpers(), 'loader'));
 		}
 
 		return $template;
