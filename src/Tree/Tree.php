@@ -2,219 +2,291 @@
 
 namespace movi\Tree;
 
-use Nette\ArrayHash;
+use movi\InvalidArgumentException;
 use Nette\Object;
-use movi\Model\Repository;
-use movi\Tree\NodeNotFound;
-use movi\InvalidStateException;
-use movi\Model\Entity;
+use movi\Model\TreeRepository;
+use Nette\Utils\Strings;
 
 abstract class Tree extends Object
 {
 
-	public $tab = '-';
+    const PATH_SEPARATOR = '/',
+        TAB = '-';
 
-	/** @var \movi\Model\Repository */
-	protected $repository;
+    /** @var TreeRepository */
+    protected $repository;
 
-	/** @var array */
-	protected $rows = array();
+    /** @var array */
+    protected $nodes = array();
 
-	/** @var array */
-	protected $nodes = array();
+    /** @var array */
+    protected $parents = array();
 
-	/** @var array */
-	protected $parents = array();
+    /** @var array */
+    protected $children = array();
 
-	/** @var array */
-	protected $children = array();
+    protected $root;
 
-	/** @var bool */
-	protected $built = false;
+    protected $built = false;
 
-	public $onBuild;
+    public $onBuild;
 
-	public $onDelete;
+    public $onFetch;
+
+    public $onAdd;
+
+    public $onMove;
+
+    public $onDelete;
 
 
-    /**
-     * @param Repository $repository
-     */
-    public function setRepository(Repository $repository)
+    public function __construct(TreeRepository $repository)
     {
         $this->repository = $repository;
     }
 
 
-	/**
-	 * @return array
-	 * @throws InvalidStateException
-	 */
-	public function build()
-	{
-		if ($this->repository === NULL) {
-			throw new InvalidStateException('Repository is not set.');
-		}
-
-		if (!$this->built) {
-			$nodes = $this->repository->findAll();
-
-			foreach ($nodes as $node)
-			{
-				$row = ArrayHash::from($node->getRowData());
-
-				$this->nodes[$row->id] = $node;
-				$this->rows[$row->id] = $row;
-
-				if ($row->parent_id === NULL) {
-					$this->parents[$row->id] = $row;
-				} else {
-					$this->children[$row->parent_id][$row->id] = $row;
-				}
-			}
-
-			$this->built = true;
-
-			$this->onBuild($this);
-		}
-	}
-
-
-	/**
-	 * @return array
-	 */
-	public function rebuild()
-	{
-		$this->built = false;
-		$this->rows = array();
-		$this->nodes = array();
-		$this->parents = array();
-		$this->children = array();
-
-		return $this->build();
-	}
-
-
-	/**
-	 * @param $id
-	 * @return Entity|NULL
-	 */
-	public function getNode($id)
-	{
-		if (isset($this->nodes[$id])) {
-			return $this->nodes[$id];
-		} else {
-			return NULL;
-		}
-	}
-
-
-	/**
-	 * @return array
-	 */
-	public function getNodes()
-	{
-		return $this->nodes;
-	}
-
-
-	/**
-	 * @param $id
-	 * @return ArrayHash
-	 */
-	public function getRow($id)
-	{
-		if ($id instanceof Entity) {
-			$id = $id->id;
-		}
-
-		if (isset($this->rows[$id])) {
-			return $this->rows[$id];
-		} else {
-			return NULL;
-		}
-	}
-
-
-	/**
-	 * @param null $node
-	 * @return array
-	 */
-	public function getParents($node = NULL)
-	{
-		if ($node === NULL) {
-			return $this->parents;
-		}
-
-		$node = $this->getRow($node);
-		$parents = array();
-
-		while ($node->parent_id !== NULL) {
-			$node = $this->getRow($node->parent_id);
-
-			$parents[$node->id] = $node;
-		}
-
-		krsort($parents);
-		return $parents;
-	}
-
-
-	/**
-	 * @param null $node
-	 * @return array
-	 */
-	public function getChildren($node = NULL)
-	{
-		if ($node === NULL) {
-			return $this->children;
-		}
-
-		if (array_key_exists($node->id, $this->children)) {
-			return $this->children[$node->id];
-		} else {
-			return array();
-		}
-	}
-
-
-	/**
-	 * @param $node
-	 * @param array $tree
-	 * @return array
-	 */
-	public function getChildrenRecursively($node, &$tree = array())
-	{
-		$children = $this->getChildren($node);
-
-		if (count($children) > 0) {
-			foreach ($children as $id => $child)
-			{
-				$tree[$id] = $this->getNode($id);
-
-				$this->getChildrenRecursively($child, $tree);
-			}
-		}
-
-		return $tree;
-	}
-
-
-	/**
-	 * @param $children
-	 * @param callable $callback
-	 */
-	public function traverseTree($children, \Closure $callback)
+    /**
+     * @param array $nodes
+     */
+    public function build(array $nodes = NULL)
     {
-        if (count($children) > 0) {
-            foreach ($children as $id => $child)
+        if ($this->built === false) {
+            if ($nodes === NULL) {
+                $nodes = $this->repository->findAll();
+            }
+
+            foreach ($nodes as $node)
             {
-				$child = $this->getNode($id);
+                $this->onFetch($node);
 
-                $callback($child);
+                $this->nodes[$node->id] = $node;
 
-                if (array_key_exists($id, $this->children)) {
-                    $this->traverseTree($this->children[$id], $callback);
+                if ($node->parent === NULL) {
+                    $this->parents[$node->order] = $node;
+                } else {
+                    $this->children[$node->parent->id][$node->order] = $node;
+                }
+
+                if ($node->root === true) {
+                    $this->root = $node;
+                }
+            }
+
+            $this->onBuild($this);
+
+            $this->built = true;
+        }
+    }
+
+
+    public function rebuild()
+    {
+        $this->built = false;
+        $this->nodes = array();
+        $this->children = array();
+        $this->parents = array();
+
+        $this->build();
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getNodes()
+    {
+        return $this->nodes;
+    }
+
+
+    /**
+     * @param $id
+     * @return mixed|TreeEntity
+     * @throws NodeNotFound
+     */
+    public function getNode($id)
+    {
+        if (is_int($id)) {
+            if (isset($this->nodes[$id])) {
+                return $this->nodes[$id];
+            } else {
+                throw new NodeNotFound('Node not found.');
+            }
+        }
+
+        $children = $this->parents;
+
+        do {
+            $nodes = explode(self::PATH_SEPARATOR, $id);
+            $node = array_shift($nodes);
+
+            $node = $this->findNode($node, $children);
+
+            if ($node === NULL) {
+                throw new NodeNotFound('Node not found.');
+            }
+
+            if ($node->path !== $id) {
+                $id = implode(self::PATH_SEPARATOR, $nodes);
+                $children = $this->getChildren($node);
+            } else {
+                break;
+            }
+        } while (true);
+
+        return $node;
+    }
+
+
+    /**
+     * @param $child
+     * @param $parent
+     * @return null
+     */
+    public function addChild($child, $parent = NULL)
+    {
+        if (!$child->isDetached()) {
+            if (($child->parent === NULL && $parent === NULL) || ($child->parent !== NULL && $parent !== NULL && $child->parent->id === $parent->id)) {
+                return NULL;
+            }
+        }
+
+        if ($parent === NULL) {
+            $children = $this->parents;
+        } else {
+            $children = $this->getChildren($parent);
+        }
+
+        $child->parent = $parent;
+
+        if (empty($children)) {
+            $child->order = 1;
+        } else {
+            $max = end($children);
+            $child->order = $max->order + 1;
+        }
+
+        if ($parent === NULL && $child->order === 1) {
+            $child->root = true;
+        }
+
+        $this->onAdd($child, $parent);
+
+        $this->repository->persist($child);
+
+        $this->rebuild();
+    }
+
+
+    /**
+     * @param $node
+     * @param $parent
+     * @return bool
+     */
+    public function moveNode($node, $parent = NULL)
+    {
+        if ($parent !== NULL) {
+            // Get node's children
+            $children = $this->getChildrenRecursively($node);
+
+            foreach ($children as $child)
+            {
+                if ($child->id === $parent->id) {
+                    return false;
+                }
+            }
+        }
+
+        // Reorder
+        $this->reorder($node);
+        $this->addChild($node, $parent);
+
+        $this->onMove($node, $parent);
+    }
+
+
+    /**
+     * @param $node
+     * @param bool $reorder
+     * @return mixed
+     */
+    public function deleteNode($node, $reorder = true)
+    {
+        if ($reorder === true) {
+            $this->reorder($node);
+        }
+
+        if ($node->root === true) {
+            $siblings = $this->getSiblings($node);
+            $root = array_shift($siblings);
+
+            if (!empty($root)) {
+                $this->setRoot($root);
+            }
+        }
+
+        $this->repository->delete($node);
+        $children = $this->getChildren($node);
+
+        if (!empty($children)) {
+            foreach ($children as $child)
+            {
+                return $this->deleteNode($child, false);
+            }
+        }
+
+        $this->rebuild();
+    }
+
+
+    /**
+     * @param $node
+     * @return mixed
+     */
+    public function saveNode($node)
+    {
+        $this->repository->persist($node);
+
+        return $node;
+    }
+
+
+    public function setRoot($node)
+    {
+        if ($this->root !== NULL) {
+            $this->root->root = false;
+            $this->repository->persist($this->root);
+        }
+
+        $node->root = true;
+        $this->repository->persist($node);
+
+        $this->root = $node;
+    }
+
+
+    public function getRoot()
+    {
+        return $this->root;
+    }
+
+
+    /**
+     * @param $node
+     */
+    private function reorder($node)
+    {
+        $siblings = $this->getSiblings($node);
+
+        if (!empty($siblings)) {
+            $siblings = array_slice($siblings, $node->order - 1);
+
+            if (!empty($siblings)) {
+                foreach ($siblings as $sibling)
+                {
+                    $sibling->order = $sibling->order - 1;
+                    $this->repository->persist($sibling);
                 }
             }
         }
@@ -222,195 +294,213 @@ abstract class Tree extends Object
 
 
     /**
-     * @param $url
-     * @param array $children
-     * @return bool
-     * @throws NodeNotFound
+     * @param $slug
+     * @param $nodes
+     * @return mixed
      */
-    public function findNode($url, $children = array())
-	{
-		if (empty($children)) {
-			$children = $this->parents;
-		}
-
-		do {
-			$nodes = explode('/', $url);
-			$node = array_shift($nodes);
-
-			$node = $this->findByPath($node, $children);
-
-			if ($node === NULL) {
-				throw new NodeNotFound();
-			}
-
-			if ($node->path !== $url) {
-				$url = implode('/', $nodes);
-				$children = $this->getChildren($node);
-			} else {
-				break;
-			}
-		} while (true);
-
-		return $node;
-	}
+    private function findNode($slug, $nodes)
+    {
+        foreach ($nodes as $node)
+        {
+            if ($node->path == $slug) {
+                return $node;
+            }
+        }
+    }
 
 
-	/**
-	 * @param $path
-	 * @param $nodes
-	 * @return bool
-	 */
-	private function findByPath($path, $nodes)
-	{
-		foreach ($nodes as $node)
-		{
-			if ($node->path == $path) {
-				return $node;
-			}
-		}
+    /**
+     * @param $node
+     * @return TreeEntity[]
+     */
+    public function getParents($node = NULL)
+    {
+        if ($node === NULL) {
+            return $this->parents;
+        }
 
-		return NULL;
-	}
+        $parents = array();
+        while ($node->parent !== NULL)
+        {
+            $node = $this->nodes[$node->parent->id];
 
+            $parents[] = $node;
+        }
 
-	/**
-	 * @param $node
-	 * @return array
-	 */
-	public function getPath($node)
-	{
-		// Return only paths
-		$path = array();
-
-		$node = $this->getRow($node);
-		$parent = $node;
-
-		while ($parent->parent_id !== NULL) {
-			$parent = $this->getRow($parent->parent_id);
-
-			$path[] = $parent->path;
-		}
-
-		krsort($path);
-		$path[] = $node->path;
-
-		return $path;
-	}
+        krsort($parents);
+        return $parents;
+    }
 
 
-	/**
-	 * @param array $children
-	 * @param array $tree
-	 * @return array
-	 */
-	public function getTree($children = array(), &$tree = array())
-	{
-		if (empty($children) && empty($tree)) {
-			$children = $this->parents;
-		}
-
-		if (count($children) > 0) {
-			foreach ($children as $id => $child)
-			{
-				if ($child->hidden == true) {
-					continue;
-				}
-
-				$child = $this->getNode($id);
-				$tree[$id] = $child;
-
-				if (array_key_exists($id, $this->children)) {
-					$this->getTree($this->children[$id], $tree);
-				}
-			}
-		}
-
-		return $tree;
-	}
+    /**
+     * @param $node
+     * @return TreeEntity[]
+     */
+    public function getChildren($node = NULL)
+    {
+        if ($node === NULL) {
+            return $this->parents;
+        } else {
+            if (isset($this->children[$node->id])) {
+                return $this->children[$node->id];
+            } else {
+                return array();
+            }
+        }
+    }
 
 
-	/**
-	 * @param $children
-	 * @param int $parent
-	 * @return array
-	 */
-	function getTreeRecursively($children = array(), $parent = 0)
-	{
-		$branch = array();
+    /**
+     * @param $node
+     * @param array $tree
+     * @return array
+     */
+    public function getChildrenRecursively($node, &$tree = array())
+    {
+        $children = $this->getChildren($node);
 
-		if ($parent == 0) {
-			$children = $this->parents;
-		}
+        if (!empty($children)) {
+            foreach ($children as $child)
+            {
+                $tree[$child->id] = $this->getNode($child->id);
 
-		foreach ($children as $id => $child)
-		{
-			$child->children = array();
+                $this->getChildrenRecursively($child, $tree);
+            }
+        }
 
-			if ($child->parent_id == $parent) {
-				if (isset($this->children[$id])) {
-					$children = $this->getTreeRecursively($this->children[$id], $id);
+        return $tree;
+    }
 
-					if ($children) {
-						$child->children = $children;
-					}
-				}
 
-				$child = $this->getNode($id);
-				$branch[$id] = $child;
-			}
-		}
+    /**
+     * @param $node
+     * @return array
+     */
+    public function getSiblings($node)
+    {
+        $siblings = array();
+        $nodes = $this->getChildren($node->parent);
 
-		return $branch;
-	}
+        foreach ($nodes as $sibling)
+        {
+            if ($sibling->id === $node->id) {
+                continue;
+            }
+
+            $siblings[] = $sibling;
+        }
+
+        return $siblings;
+    }
+
+
+    /**
+     * @param $node
+     * @return array
+     */
+    public function getPath($node)
+    {
+        $nodes = $this->getParents($node);
+        $nodes[] = $node;
+        $path = array();
+
+        foreach ($nodes as $part)
+        {
+            $path[] = $part->path;
+        }
+
+        return implode('/', $path);
+    }
 
 
     /**
      * @param null $exclude
-     * @param array $children
+     * @param array $nodes
      * @param int $level
      * @param array $options
      * @return array
      */
-    public function getArray($exclude = NULL, $children = array(), $level = 0, &$options = array())
-	{
-		if ($level === 0) {
-			$children = $this->parents;
-		}
+    public function getArray($exclude = NULL, $nodes = array(), $level = 0, &$options = array())
+    {
+        if ($level === 0) {
+            $nodes = $this->parents;
+        }
 
-		if (count($children) > 0) {
-			foreach ($children as $id => $child)
-			{
-				if ($id == $exclude || $child->hidden) {
-					continue;
-				}
+        if (!empty($nodes)) {
+            foreach ($nodes as $child)
+            {
+                if (($exclude !== NULL && $exclude === $child->id) || $child->hidden === true) {
+                    continue;
+                }
 
-				$options[$id] = sprintf('%s %s', str_repeat($this->tab, $level), $child->title);
+                $options[$child->id] = sprintf('%s %s', str_repeat(self::TAB, $level), $child->name);
 
-				if (array_key_exists($id, $this->children)) {
-					$this->getArray($exclude, $this->children[$id], $level + 1, $options);
-				}
-			}
-		}
+                $children = $this->getChildren($child);
+                if (!empty($children)) {
+                    $this->getArray($exclude, $children, $level + 1, $options);
+                }
+            }
+        }
 
-		return $options;
-	}
+        return $options;
+    }
 
 
-	/**
-	 * @param $node
-	 */
-	public function delete($node)
-	{
-		// Delete the node
-		$this->onDelete($node);
+    /**
+     * @param array $children
+     * @param array $tree
+     * @return array
+     */
+    public function getTree($children = array(), &$tree = array())
+    {
+        if (empty($children) && empty($tree)) {
+            $children = $this->parents;
+        }
 
-		if (array_key_exists($node->id, $this->children)) {
-			foreach ($this->children[$node->id] as $id => $child)
-			{
-				$child = $this->getNode($id);
-				$this->delete($child);
-			}
-		}
-	}
+        if (!empty($children)) {
+            foreach ($children as $child)
+            {
+                if ($child->hidden === true) {
+                    continue;
+                }
+
+                $tree[$child->id] = $child;
+
+                $children = $this->getChildren($child);
+                if (!empty($children)) {
+                    $this->getTree($children, $tree);
+                }
+            }
+        }
+
+        return $tree;
+    }
+
+
+    /**
+     * @param $callback
+     * @param null $nodes
+     * @throws \movi\InvalidArgumentException
+     */
+    public function walk($callback, $nodes = NULL)
+    {
+        if (!is_callable($callback)) {
+            throw new InvalidArgumentException('Callback is not callable!');
+        }
+
+        if ($nodes === NULL) {
+            $nodes = $this->parents;
+        }
+
+        foreach ($nodes as $node)
+        {
+            $callback($node);
+
+            $children = $this->getChildren($node);
+            if (!empty($children)) {
+                $this->walk($callback, $children);
+            }
+        }
+    }
 
 }
