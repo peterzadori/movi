@@ -8,50 +8,49 @@ use movi\Tree\Tree;
 class TreeDataSource implements IDataSource
 {
 
-	/** @var \movi\Tree  */
-	private $tree;
+    /** @var \movi\Tree\Tree  */
+    private $tree;
 
 
-	public function __construct(Tree $tree)
-	{
-		$this->tree = $tree;
-	}
+    public function __construct(Tree $tree)
+    {
+        $this->tree = $tree;
+        $this->tree->build();
+    }
 
-	public function fetch()
-	{
-		$this->tree->rebuild();
-
-		return $this->tree->getTree();
-	}
-
-
-	public function count()
-	{
-		return count($this->tree->getNodes());
-	}
+    public function fetch()
+    {
+        return $this->tree->getTree();
+    }
 
 
-	public function sort(array $sorting)
-	{
-
-	}
-
-
-	public function filter($condition = array())
-	{
-
-	}
+    public function count()
+    {
+        return count($this->tree->getNodes());
+    }
 
 
-	public function limit($limit, $offset)
-	{
+    public function sort(array $sorting)
+    {
 
-	}
+    }
 
 
-	public function getClone()
-	{
-		return new $this($this->tree);
-	}
+    public function filter($condition = array())
+    {
+
+    }
+
+
+    public function limit($limit, $offset)
+    {
+
+    }
+
+
+    public function getClone()
+    {
+        return new $this($this->tree);
+    }
 
 }
