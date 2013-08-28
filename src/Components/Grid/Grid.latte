@@ -3,9 +3,9 @@
 		{$flash->message}
 	</div>
 
-    {var colspan => count($control['columns']->getColumns())}
-    {if $control->hasActions()}{? $colspan++}{/if}
-    {if $control->hasButtons() || $control->hasFilters()}{? $colspan++}{/if}
+	{var colspan => count($control['columns']->getColumns())}
+	{if $control->hasActions()}{? $colspan++}{/if}
+	{if $control->hasButtons() || $control->hasFilters()}{? $colspan++}{/if}
 
 	{form form, class => ["ajax", "form-inline"]}
 		{* Begin table *}

@@ -19,7 +19,7 @@ class Form extends Nette\Application\UI\Form
 		$this->setRenderer($renderer);
 
 		if ($presenter instanceOf Presenter) {
-            $this->setTranslator($presenter->getTranslator());
+			$this->setTranslator($presenter->getTranslator());
 
 			if ($presenter->isAjax()) {
 				$this->getElementPrototype()->class[] = 'ajax';

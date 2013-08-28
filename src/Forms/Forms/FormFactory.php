@@ -8,40 +8,40 @@ use movi\Application\UI\Form;
 abstract class FormFactory extends Object implements IFormFactory
 {
 
-    /**
-     * @return Form
-     */
-    public function createForm()
-    {
-        $form = new Form();
+	/**
+	 * @return Form
+	 */
+	public function createForm()
+	{
+		$form = new Form();
 
-        $this->configure($form);
-        $this->loadValues($form);
-        $this->attachHandlers($form);
+		$this->configure($form);
+		$this->loadValues($form);
+		$this->attachHandlers($form);
 
-        return $form;
-    }
-
-
-    protected function loadValues(Form $form)
-    {
-
-    }
+		return $form;
+	}
 
 
-    protected function attachHandlers(Form $form)
-    {
-        if (method_exists($this, 'validateForm')) {
-            $form->onValidate[] = $this->validateForm;
-        }
+	protected function loadValues(Form $form)
+	{
 
-        if (method_exists($this, 'processForm')) {
-            $form->onSuccess[] = $this->processForm;
-        }
+	}
 
-        if (method_exists($this, 'processErrors')) {
-            $form->onError[] = $this->processErrors;
-        }
-    }
+
+	protected function attachHandlers(Form $form)
+	{
+		if (method_exists($this, 'validateForm')) {
+			$form->onValidate[] = $this->validateForm;
+		}
+
+		if (method_exists($this, 'processForm')) {
+			$form->onSuccess[] = $this->processForm;
+		}
+
+		if (method_exists($this, 'processErrors')) {
+			$form->onError[] = $this->processErrors;
+		}
+	}
 
 }

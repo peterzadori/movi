@@ -26,12 +26,12 @@ abstract class Control extends Nette\Application\UI\Control
 	}
 
 
-    /**
-     * @return Nette\Security\User
-     */
-    public function getUser()
-    {
-        return $this->presenter->getUser();
-    }
+	/**
+	 * @return Nette\Security\User
+	 */
+	public function getUser()
+	{
+		return $this->presenter->getUser();
+	}
 
 }

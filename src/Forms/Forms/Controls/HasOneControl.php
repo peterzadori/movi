@@ -11,139 +11,139 @@ use movi\Model\Repository;
 final class HasOneControl extends BaseControl
 {
 
-    /** @var Repository */
-    private $repository;
+	/** @var Repository */
+	private $repository;
 
-    /** @var string */
-    private $column;
+	/** @var string */
+	private $column;
 
-    /** @var array */
-    private $items;
+	/** @var array */
+	private $items;
 
-    /** @var IdentifiedEntity */
-    private $item;
+	/** @var IdentifiedEntity */
+	private $item;
 
-    /** @var NULL|string */
-    private $prompt;
-
-
-    public function __construct($label = NULL, $column = NULL, array $items = NULL)
-    {
-        parent::__construct($label);
-
-        if ($column === NULL) {
-            $column = 'name';
-        }
-
-        $this->column = $column;
-
-        if (!empty($items)) {
-            $this->setItems($items);
-        }
-
-        $this->control->setName('select');
-    }
+	/** @var NULL|string */
+	private $prompt;
 
 
-    /**
-     * @param Repository $repository
-     * @return $this
-     */
-    public function setRepository(Repository $repository)
-    {
-        $this->repository = $repository;
+	public function __construct($label = NULL, $column = NULL, array $items = NULL)
+	{
+		parent::__construct($label);
 
-        $this->setItems($repository->findAll());
+		if ($column === NULL) {
+			$column = 'name';
+		}
 
-        return $this;
-    }
+		$this->column = $column;
 
+		if (!empty($items)) {
+			$this->setItems($items);
+		}
 
-    /**
-     * @param $value
-     * @return $this|bool|BaseControl
-     */
-    public function setValue($value)
-    {
-        parent::setValue($value);
-
-        if ($value instanceof IdentifiedEntity) {
-            if (isset($this->items[$value->id])) {
-                $this->item = $this->items[$value->id];
-            }
-        } else {
-            if (isset($this->items[$this->value])) {
-                $this->item = $this->items[$this->value];
-            }
-        }
-
-        return $this;
-    }
+		$this->control->setName('select');
+	}
 
 
-    /**
-     * @return mixed|IdentifiedEntity
-     */
-    public function getValue()
-    {
-        return $this->item;
-    }
+	/**
+	 * @param Repository $repository
+	 * @return $this
+	 */
+	public function setRepository(Repository $repository)
+	{
+		$this->repository = $repository;
+
+		$this->setItems($repository->findAll());
+
+		return $this;
+	}
 
 
-    /**
-     * @param array $items
-     * @return $this
-     * @throws \movi\InvalidArgumentException
-     */
-    public function setItems(array $items)
-    {
-        foreach ($items as $item)
-        {
-            if (!($item instanceof IdentifiedEntity)) {
-                throw new InvalidArgumentException('Entity must be an instance of IdentifiedEntity!');
-            }
-        }
+	/**
+	 * @param $value
+	 * @return $this|bool|BaseControl
+	 */
+	public function setValue($value)
+	{
+		parent::setValue($value);
 
-        $this->items = $items;
+		if ($value instanceof IdentifiedEntity) {
+			if (isset($this->items[$value->id])) {
+				$this->item = $this->items[$value->id];
+			}
+		} else {
+			if (isset($this->items[$this->value])) {
+				$this->item = $this->items[$this->value];
+			}
+		}
 
-        return $this;
-    }
-
-
-    /**
-     * @param $prompt
-     * @return $this
-     */
-    public function setPrompt($prompt)
-    {
-        $this->prompt = $prompt;
-
-        return $this;
-    }
+		return $this;
+	}
 
 
-    /**
-     * @return Html
-     */
-    public function getControl()
-    {
-        $selected = $this->getValue();
-        $selected = $selected === NULL ? NULL : array($selected->id => TRUE);
-        $control = parent::getControl();
-        $option = Html::el('option');
+	/**
+	 * @return mixed|IdentifiedEntity
+	 */
+	public function getValue()
+	{
+		return $this->item;
+	}
 
-        if ($this->prompt !== NULL) {
-            $control->add((string) $option->value('')->setText($this->prompt));
-        }
 
-        foreach ($this->items as $key => $value)
-        {
-            $option->value($key)->setText($value->{$this->column})->selected(isset($selected[$key]));
+	/**
+	 * @param array $items
+	 * @return $this
+	 * @throws \movi\InvalidArgumentException
+	 */
+	public function setItems(array $items)
+	{
+		foreach ($items as $item)
+		{
+			if (!($item instanceof IdentifiedEntity)) {
+				throw new InvalidArgumentException('Entity must be an instance of IdentifiedEntity!');
+			}
+		}
 
-            $control->add((string) $option);
-        }
+		$this->items = $items;
 
-        return $control;
-    }
+		return $this;
+	}
+
+
+	/**
+	 * @param $prompt
+	 * @return $this
+	 */
+	public function setPrompt($prompt)
+	{
+		$this->prompt = $prompt;
+
+		return $this;
+	}
+
+
+	/**
+	 * @return Html
+	 */
+	public function getControl()
+	{
+		$selected = $this->getValue();
+		$selected = $selected === NULL ? NULL : array($selected->id => TRUE);
+		$control = parent::getControl();
+		$option = Html::el('option');
+
+		if ($this->prompt !== NULL) {
+			$control->add((string) $option->value('')->setText($this->prompt));
+		}
+
+		foreach ($this->items as $key => $value)
+		{
+			$option->value($key)->setText($value->{$this->column})->selected(isset($selected[$key]));
+
+			$control->add((string) $option);
+		}
+
+		return $control;
+	}
 
 }

@@ -14,11 +14,11 @@ final class FormExtension
 	{
 		Kdyby\Replicator\Container::register();
 
-        Container::extensionMethod('addHasOne', function(Container $container, $name, $label = NULL, $column = NULL, array $items = NULL) {
-            $control = $container[$name] = new HasOneControl($label, $column, $items);
+		Container::extensionMethod('addHasOne', function(Container $container, $name, $label = NULL, $column = NULL, array $items = NULL) {
+			$control = $container[$name] = new HasOneControl($label, $column, $items);
 
-            return $control;
-        });
+			return $control;
+		});
 
 		// WYSIWYG
 		Container::extensionMethod('addWysiwyg', function(Container $container, $name, $label = NULL, $rows = NULL, $cols = NULL) {

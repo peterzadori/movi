@@ -106,10 +106,10 @@ class Grid extends Control
 	}
 
 
-    /**
-     * @return string
-     */
-    public function getPrimaryKey()
+	/**
+	 * @return string
+	 */
+	public function getPrimaryKey()
 	{
 		return $this->primaryKey;
 	}
@@ -524,8 +524,8 @@ class Grid extends Control
 		parent::attached($presenter);
 
 		if ($presenter instanceof Presenter) {
-            // Check validity
-            $this->validate();
+			// Check validity
+			$this->validate();
 
 			// Invalidate control
 			if ($presenter->isAjax()) {
@@ -535,16 +535,16 @@ class Grid extends Control
 	}
 
 
-    private function validate()
-    {
-        if ($this->dataSource === NULL) {
-            throw new InvalidStateException('Data source is not set');
-        }
+	private function validate()
+	{
+		if ($this->dataSource === NULL) {
+			throw new InvalidStateException('Data source is not set');
+		}
 
-        if (count($this['columns']->getColumns()) == 0) {
-            throw new InvalidArgumentException('No columns are set');
-        }
-    }
+		if (count($this['columns']->getColumns()) == 0) {
+			throw new InvalidArgumentException('No columns are set');
+		}
+	}
 
 
 	/**
