@@ -59,6 +59,67 @@ class Grid extends Control
 	/** @var array */
 	private $filters;
 
+	public $onFetch;
+
+	public $onRender;
+
+
+	public function __construct()
+	{
+		// Create factories
+		$this->tableFactory = function() {
+			$table = Html::el('table');
+			$table->class[] = 'table';
+			$table->class[] = 'table-striped';
+			$table->class[] = 'table-hover';
+
+			return $table;
+		};
+
+		$this->rowFactory = function() {
+			$row = Html::el('tr');
+
+			return $row;
+		};
+
+		// Set default sorting
+		$this->defaultSorting = array($this->primaryKey, 'DESC');
+	}
+
+
+	/**
+	 * @param $factory
+	 * @return $this
+	 * @throws \movi\InvalidArgumentException
+	 */
+	public function setRowFactory($factory)
+	{
+		if (!is_callable($factory)) {
+			throw new InvalidArgumentException('Row factory is not callable!');
+		}
+
+		$this->rowFactory = $factory;
+
+		return $this;
+	}
+
+
+	/**
+	 * @param $factory
+	 * @return $this
+	 * @throws \movi\InvalidArgumentException
+	 */
+	public function setTableFactory($factory)
+	{
+		if (!is_callable($factory)) {
+			throw new InvalidArgumentException('Table factory is not callable!');
+		}
+
+		$this->tableFactory = $factory;
+
+		return $this;
+	}
+
 
 	/**
 	 * @param IDataSource $dataSource
@@ -123,6 +184,8 @@ class Grid extends Control
 		$template->rows = $this->getRows();
 		$template->actions = $this->actions;
 
+		$this->onRender($this, $template);
+
 		$template->render();
 	}
 
@@ -152,6 +215,8 @@ class Grid extends Control
 		{
 			$this->rows[$row->{$this->primaryKey}] = $row;
 		}
+
+		$this->onFetch($this->rows);
 
 		$this->addCheckboxes();
 
@@ -483,39 +548,6 @@ class Grid extends Control
 				$this->invalidateControl();
 			}
 		}
-	}
-
-
-	protected function configure()
-	{
-
-	}
-
-
-	public function loadState(array $params)
-	{
-		parent::loadState($params);
-
-		// Create factories
-		$this->tableFactory = function() {
-			$table = Html::el('table');
-			$table->class[] = 'table';
-			$table->class[] = 'table-striped';
-			$table->class[] = 'table-hover';
-
-			return $table;
-		};
-
-		$this->rowFactory = function() {
-			$row = Html::el('tr');
-
-			return $row;
-		};
-
-		// Set default sorting
-		$this->defaultSorting = array($this->primaryKey, 'DESC');
-
-		$this->configure();
 	}
 
 
