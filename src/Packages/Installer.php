@@ -2,10 +2,10 @@
 
 namespace movi\Packages;
 
-use movi\Caching\CacheProvider;
 use Nette\Caching\Cache;
 use Nette\DI\Container;
 use Nette\Utils\Json;
+use movi\Caching\CacheProvider;
 
 final class Installer
 {

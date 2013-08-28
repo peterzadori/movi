@@ -2,9 +2,9 @@
 
 namespace movi\Config;
 
-use movi;
-use Nette;
 use Kdyby;
+use Nette;
+use movi;
 
 final class Configurator extends Nette\Config\Configurator
 {

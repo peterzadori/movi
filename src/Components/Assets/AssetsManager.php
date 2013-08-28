@@ -2,11 +2,11 @@
 
 namespace movi\Components\Assets;
 
-use movi\Caching\CacheProvider;
-use movi\Diagnostics\Stopwatch;
 use Nette\Object;
 use Nette\Utils\Finder;
 use Nette\Utils\Strings;
+use movi\Caching\CacheProvider;
+use movi\Diagnostics\Stopwatch;
 
 class AssetsManager extends Object
 {

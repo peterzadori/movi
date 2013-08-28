@@ -4,13 +4,13 @@ namespace movi\Model;
 
 use Kdyby\Events\EventManager;
 use LeanMapper\Connection;
-use movi\Model\Entity;
+use LeanMapper\Events;
 use LeanMapper\Fluent;
 use LeanMapper\IMapper;
-use movi\EntityNotFound;
 use Nette\ObjectMixin;
 use Nette\Reflection\ClassType;
-use LeanMapper\Events;
+use movi\EntityNotFound;
+use movi\Model\Entity;
 
 abstract class Repository extends \LeanMapper\Repository
 {

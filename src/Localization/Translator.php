@@ -2,12 +2,12 @@
 
 namespace movi\Localization;
 
-use movi\Caching\CacheProvider;
-use movi\Model\Entities\Language as LanguageEntity;
+use Kdyby\Events\Subscriber;
 use Nette\Caching\Cache;
 use Nette\Localization\ITranslator;
 use Nette\Utils\Neon;
-use Kdyby\Events\Subscriber;
+use movi\Caching\CacheProvider;
+use movi\Model\Entities\Language as LanguageEntity;
 
 final class Translator implements ITranslator, Subscriber
 {

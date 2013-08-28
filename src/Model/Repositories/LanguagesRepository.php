@@ -2,10 +2,10 @@
 
 namespace movi\Model\Repositories;
 
+use Nette\Utils\Strings;
 use movi\InvalidArgumentException;
 use movi\Model\Entities\Language;
 use movi\Model\Repository;
-use Nette\Utils\Strings;
 
 /**
  * Class LanguagesRepository

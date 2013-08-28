@@ -2,12 +2,12 @@
 
 namespace movi\Config\Extensions;
 
-use movi\Config\CompilerExtension;
+use LeanMapper\Connection;
+use Nette\Config\Compiler;
 use Nette\DI\ContainerBuilder;
 use Nette\Utils\PhpGenerator\ClassType;
-use Nette\Config\Compiler;
-use LeanMapper\Connection;
 use Nette\Utils\Validators;
+use movi\Config\CompilerExtension;
 
 final class moviExtension extends CompilerExtension
 {

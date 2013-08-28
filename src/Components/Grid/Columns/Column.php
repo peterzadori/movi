@@ -2,12 +2,12 @@
 
 namespace movi\Components\Grid\Columns;
 
+use Nette\Callback;
+use Nette\Utils\Html;
 use movi\Components\Grid\Component;
 use movi\Components\Grid\Filters\Filter;
 use movi\InvalidArgumentException;
 use movi\Model\Entity;
-use Nette\Callback;
-use Nette\Utils\Html;
 
 class Column extends Component
 {

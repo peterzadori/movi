@@ -2,6 +2,12 @@
 
 namespace movi\Components\Grid;
 
+use Nette\Application\UI\Presenter;
+use Nette\ArrayHash;
+use Nette\Callback;
+use Nette\ComponentModel\Container;
+use Nette\Utils\Html;
+use Nette\Utils\Strings;
 use movi\Application\UI\Control;
 use movi\Application\UI\Form;
 use movi\Components\Grid\Columns\Boolean;
@@ -12,12 +18,6 @@ use movi\Components\Grid\Columns\Money;
 use movi\Components\Grid\Filters\Filter;
 use movi\Components\Paginator;
 use movi\InvalidArgumentException;
-use Nette\Application\UI\Presenter;
-use Nette\ArrayHash;
-use Nette\Callback;
-use Nette\ComponentModel\Container;
-use Nette\Utils\Html;
-use Nette\Utils\Strings;
 use movi\InvalidStateException;
 
 class Grid extends Control

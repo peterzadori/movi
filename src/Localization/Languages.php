@@ -2,9 +2,9 @@
 
 namespace movi\Localization;
 
-use movi\Model\Repositories\LanguagesRepository;
 use Nette\Object;
 use movi\Model\Entities\Language as LanguageEntity;
+use movi\Model\Repositories\LanguagesRepository;
 
 final class Languages extends Object
 {

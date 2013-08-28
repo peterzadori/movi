@@ -2,8 +2,8 @@
 
 namespace movi\Components;
 
-use movi\Application\UI\Control;
 use Nette\Utils\Paginator as NettePaginator;
+use movi\Application\UI\Control;
 
 class Paginator extends Control
 {

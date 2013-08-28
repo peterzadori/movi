@@ -2,12 +2,11 @@
 
 namespace movi\Components\Grid\Filters;
 
-use movi\Components\Grid\Columns\Column;
-use movi\Components\Grid\Component;
-use movi\Components\Grid\Grid;
-use movi\Components\Grid\IDataSource;
 use Nette\Forms\IControl;
 use Nette\Object;
+use movi\Components\Grid\Columns\Column;
+use movi\Components\Grid\Grid;
+use movi\Components\Grid\IDataSource;
 
 abstract class Filter extends Object
 {

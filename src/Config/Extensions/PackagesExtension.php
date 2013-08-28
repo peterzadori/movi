@@ -2,13 +2,13 @@
 
 namespace movi\Config\Extensions;
 
-use movi\Config\CompilerExtension;
 use Nette\Config\Helpers;
+use Nette\DI\ContainerBuilder;
+use Nette\Utils\PhpGenerator\ClassType;
+use movi\Config\CompilerExtension;
 use movi\InvalidArgumentException;
 use movi\Packages\BasePackage;
 use movi\Packages\Package;
-use Nette\DI\ContainerBuilder;
-use Nette\Utils\PhpGenerator\ClassType;
 
 final class PackagesExtension extends CompilerExtension
 {

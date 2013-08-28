@@ -2,8 +2,8 @@
 
 namespace movi\Templating;
 
-use movi\Packages\Settings\Services\Settings;
 use Nette\Object;
+use movi\Packages\Settings\Services\Settings;
 
 class TemplateManager extends Object
 {

@@ -2,10 +2,10 @@
 
 namespace movi\Tree;
 
-use movi\InvalidArgumentException;
 use Nette\Object;
-use movi\Model\TreeRepository;
 use Nette\Utils\Strings;
+use movi\InvalidArgumentException;
+use movi\Model\TreeRepository;
 
 abstract class Tree extends Object
 {
@@ -433,7 +433,8 @@ abstract class Tree extends Object
                     continue;
                 }
 
-                $options[$child->id] = sprintf('%s %s', str_repeat(self::TAB, $level), $child->name);
+                $child->name = sprintf('%s %s', str_repeat(self::TAB, $level), $child->name);
+                $options[$child->id] = $child;
 
                 $children = $this->getChildren($child);
                 if (!empty($children)) {

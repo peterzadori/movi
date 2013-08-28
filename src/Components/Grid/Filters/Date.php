@@ -2,9 +2,9 @@
 
 namespace movi\Components\Grid\Filters;
 
-use movi\Components\Grid\IDataSource;
-use movi\Components\Grid\Columns\Date as DateColumn;
 use Nette\DateTime;
+use movi\Components\Grid\Columns\Date as DateColumn;
+use movi\Components\Grid\IDataSource;
 
 final class Date extends Filter
 {

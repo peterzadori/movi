@@ -2,11 +2,10 @@
 
 namespace movi\Components;
 
+use Nette\Http\IRequest;
 use movi\Application\UI\Control;
 use movi\Application\UI\Form;
 use movi\Application\UI\Presenter;
-use Nette\Http\FileUpload;
-use Nette\Http\IRequest;
 
 final class Uploadify extends Control
 {

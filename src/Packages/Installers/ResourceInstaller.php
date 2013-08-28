@@ -2,9 +2,9 @@
 
 namespace movi\Packages\Installers;
 
+use Nette\Utils\Finder;
 use movi\Packages\IInstaller;
 use movi\Packages\Package;
-use Nette\Utils\Finder;
 
 class ResourceInstaller implements IInstaller
 {

@@ -2,9 +2,9 @@
 
 namespace movi\Forms;
 
+use Kdyby;
 use Nette\Forms\Container;
 use Nette\Forms\Form;
-use Kdyby;
 
 final class FormExtension
 {

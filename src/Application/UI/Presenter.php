@@ -2,12 +2,12 @@
 
 namespace movi\Application\UI;
 
+use Nette\DI\Container;
 use movi\Localization\Languages;
 use movi\Localization\Translator;
+use movi\Model\Entities\Language;
 use movi\Templating\Helpers;
 use movi\Templating\TemplateManager;
-use Nette\DI\Container;
-use movi\Model\Entities\Language;
 
 abstract class Presenter extends \Nette\Application\UI\Presenter
 {

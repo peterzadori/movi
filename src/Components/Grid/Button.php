@@ -2,10 +2,10 @@
 
 namespace movi\Components\Grid;
 
-use movi\InvalidArgumentException;
-use movi\Model\Entity;
 use Nette\Callback;
 use Nette\Utils\Html;
+use movi\InvalidArgumentException;
+use movi\Model\Entity;
 
 class Button extends Component
 {

@@ -4,7 +4,7 @@ namespace movi\Application\UI;
 
 use Nette;
 
-class Control extends Nette\Application\UI\Control
+abstract class Control extends Nette\Application\UI\Control
 {
 
 	/**

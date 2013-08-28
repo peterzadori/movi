@@ -3,9 +3,7 @@
 namespace movi\Packages;
 
 use Nette\Config\Compiler;
-use Nette\Config\Configurator;
 use Nette\DI\Container;
-use movi\Model\Mapper;
 
 abstract class Package
 {
