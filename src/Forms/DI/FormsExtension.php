@@ -11,6 +11,7 @@ final class FormsExtension extends CompilerExtension
 	public function afterCompile(ClassType $class)
 	{
 		$init = $class->methods['initialize'];
+		$init->addBody('Kdyby\Replicator\Container::register();');
 		$init->addBody('movi\Forms\FormExtension::register();');
 	}
 

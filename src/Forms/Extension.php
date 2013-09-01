@@ -11,8 +11,6 @@ final class FormExtension
 
 	public static function register()
 	{
-		Kdyby\Replicator\Container::register();
-
 		// WYSIWYG
 		Container::extensionMethod('addWysiwyg', function(Container $container, $name, $label = NULL, $rows = NULL, $cols = NULL) {
 			$control = $container->addTextArea($name, $label, $cols, $rows);
