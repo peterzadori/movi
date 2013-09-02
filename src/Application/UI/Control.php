@@ -22,6 +22,12 @@ abstract class Control extends Nette\Application\UI\Control
 			$template->registerHelperLoader(callback($this->presenter->getHelpers(), 'loader'));
 		}
 
+		$file = $this->getTemplateFile();
+
+		if (file_exists($file) && $template instanceof Nette\Templating\IFileTemplate) {
+			$template->setFile($file);
+		}
+
 		return $template;
 	}
 
@@ -32,6 +38,17 @@ abstract class Control extends Nette\Application\UI\Control
 	public function getUser()
 	{
 		return $this->presenter->getUser();
+	}
+
+
+	/**
+	 * @return string
+	 */
+	private function getTemplateFile()
+	{
+		$reflection = $this->getReflection();
+
+		return dirname($reflection->getFileName()) . '/' . $reflection->getName() . '.latte';
 	}
 
 }
