@@ -3,6 +3,7 @@
 namespace movi\Forms;
 
 use Kdyby;
+use movi\Forms\Controls\HasOneControl;
 use Nette\Forms\Container;
 use Nette\Forms\Form;
 
@@ -11,6 +12,14 @@ final class FormExtension
 
 	public static function register()
 	{
+		Kdyby\Replicator\Container::register();
+
+		Container::extensionMethod('addHasOne', function(Container $container, $name, $label = NULL, $column = NULL, array $items = NULL) {
+			$control = $container[$name] = new HasOneControl($label, $column, $items);
+
+			return $control;
+		});
+
 		// WYSIWYG
 		Container::extensionMethod('addWysiwyg', function(Container $container, $name, $label = NULL, $rows = NULL, $cols = NULL) {
 			$control = $container->addTextArea($name, $label, $cols, $rows);
