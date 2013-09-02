@@ -5,6 +5,7 @@ namespace movi\Config;
 use Kdyby;
 use Nette;
 use movi;
+use VojtechDobes\NetteForms\InputListExtension;
 
 final class Configurator extends Nette\Config\Configurator
 {
@@ -50,6 +51,7 @@ final class Configurator extends Nette\Config\Configurator
 		$compiler->addExtension('forms', new movi\Forms\DI\FormsExtension());
 		$compiler->addExtension('events', new Kdyby\Events\DI\EventsExtension());
 		$compiler->addExtension('console', new Kdyby\Console\DI\ConsoleExtension());
+		$compiler->addExtension('inputlist', new InputListExtension());
 
 		return $compiler;
 	}
