@@ -2,7 +2,11 @@
 
 namespace movi\Components\Assets;
 
+use Nette\Caching\Cache;
+use Nette\Caching\Storages\DevNullStorage;
+use Nette\Caching\Storages\MemoryStorage;
 use Nette\Object;
+use Nette\Utils\Arrays;
 use Nette\Utils\Finder;
 use Nette\Utils\Strings;
 use movi\Caching\CacheProvider;
@@ -15,7 +19,7 @@ class AssetsManager extends Object
 	private $resourcesDir;
 
 	/** @var array */
-	private $supported = array('css', 'js');
+	private $supported = array('*.css', '*.js');
 
 	/** @var array */
 	private $dirs = array();
@@ -101,14 +105,20 @@ class AssetsManager extends Object
 					continue;
 				}
 
-				foreach(Finder::find('*')->from($dir) as $file)
+				$tmp = array();
+
+				foreach(Finder::find($this->supported)->from($dir) as $file)
 				{
 					if ($file->isDir()) {
 						continue;
 					}
 
-					$files[] = $file->getRealPath();
+					$tmp[$file->getRealPath()] = $file->getRealPath();
 				}
+
+				sort($tmp);
+
+				$files = array_merge($files, $tmp);
 			}
 
 			// Merge custom added files and found files
@@ -123,10 +133,6 @@ class AssetsManager extends Object
 				}
 
 				$file = new \SplFileInfo($file);
-
-				if (!in_array($file->getExtension(), $this->supported)) {
-					continue;
-				}
 
 				$path = Strings::substring($file->getRealPath(), strlen($this->resourcesDir));
 				$path = Strings::replace($path, '#\\\#', '/');
