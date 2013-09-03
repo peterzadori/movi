@@ -10,6 +10,7 @@ use Nette\Caching\Cache;
 class CachedTree extends Tree
 {
 
+	/** @var \movi\Localization\Language */
 	private $language;
 
 	/** @var \Nette\Caching\Cache */
