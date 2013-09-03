@@ -213,6 +213,10 @@ abstract class Tree extends Object
 	 */
 	public function deleteNode($node, $reorder = true)
 	{
+		if (!isset($this->nodes[$node->id])) {
+			return false;
+		}
+
 		if ($reorder === true) {
 			$this->reorder($node);
 		}
