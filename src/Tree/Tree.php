@@ -40,9 +40,15 @@ abstract class Tree extends Object
 	public $onDelete;
 
 
-	public function __construct(TreeRepository $repository)
+	/**
+	 * @param TreeRepository $repository
+	 * @return $this
+	 */
+	public function setRepository(TreeRepository $repository)
 	{
 		$this->repository = $repository;
+
+		return $this;
 	}
 
 
