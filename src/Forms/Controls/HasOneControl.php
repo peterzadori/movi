@@ -97,14 +97,18 @@ final class HasOneControl extends BaseControl
 	 */
 	public function setItems(array $items)
 	{
+		$rows = array();
+
 		foreach ($items as $item)
 		{
-			if (!($item instanceof IdentifiedEntity)) {
+			if ($item instanceof IdentifiedEntity) {
+				$rows[$item->id] = $item;
+			} else {
 				throw new InvalidArgumentException('Entity must be an instance of IdentifiedEntity!');
 			}
 		}
 
-		$this->items = $items;
+		$this->items = $rows;
 
 		return $this;
 	}
