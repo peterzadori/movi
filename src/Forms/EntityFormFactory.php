@@ -64,6 +64,7 @@ abstract class EntityFormFactory extends FormFactory
 	{
 		$values = $form->getValues();
 		$properties = $this->entity->getReflection()->getEntityProperties();
+		$modified = $this->entity->getModifiedRowData();
 
 		foreach ($values as $key => $value)
 		{
@@ -74,7 +75,7 @@ abstract class EntityFormFactory extends FormFactory
 			if (array_key_exists($key, $properties)) {
 				$property = $properties[$key];
 
-				if ($property->hasRelationship() === false) {
+				if ($property->hasRelationship() === false && $property->isBasicType() && array_key_exists($key, $modified)) {
 					$this->entity->{$key} = $value;
 				}
 			}
