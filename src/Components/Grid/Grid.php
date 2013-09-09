@@ -209,14 +209,14 @@ class Grid extends Control
 
 		$dataSource->limit($this->itemsPerPage, $paginator->offset);
 
+		$this->onFetch($dataSource);
+
 		$rows = $dataSource->fetch();
 
 		foreach ($rows as $row)
 		{
 			$this->rows[$row->{$this->primaryKey}] = $row;
 		}
-
-		$this->onFetch($this->rows);
 
 		$this->addCheckboxes();
 
