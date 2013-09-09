@@ -75,7 +75,7 @@ abstract class EntityFormFactory extends FormFactory
 			if (array_key_exists($key, $properties)) {
 				$property = $properties[$key];
 
-				if ($property->hasRelationship() === false && $property->isBasicType() && array_key_exists($key, $modified)) {
+				if ($property->hasRelationship() === false && $property->isBasicType() && !array_key_exists($key, $modified)) {
 					$this->entity->{$key} = $value;
 				}
 			}
