@@ -12,9 +12,21 @@ class TemplateManager extends Object
 	private $templatesDir;
 
 
-	public function __construct($templatesDir, Settings $settings)
+	public function __construct($templatesDir)
 	{
-		$this->templatesDir = $templatesDir . '/' . $settings->templating->template;
+		$this->templatesDir = $templatesDir;
+	}
+
+
+	/**
+	 * @param $dir
+	 * @return $this
+	 */
+	public function setTemplatesDir($dir)
+	{
+		$this->templatesDir .= '/' . $dir;
+
+		return $this;
 	}
 
 
