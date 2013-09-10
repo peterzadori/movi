@@ -23,7 +23,7 @@ final class HasManyControl extends Container
 	private $loaded = false;
 
 	/** @var IdentifiedEntity[] */
-	private $selected;
+	private $selected = [];
 
 
 	public function __construct($column = NULL, array $items = NULL)
