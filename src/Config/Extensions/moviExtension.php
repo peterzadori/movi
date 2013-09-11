@@ -104,6 +104,10 @@ final class moviExtension extends CompilerExtension
 		$builder->addDefinition($this->prefix('mapper'))
 			->setClass('movi\Model\Mapper');
 
+		$builder->addDefinition($this->prefix('entityMapping'))
+			->setClass('movi\Model\EntityMapping')
+			->addTag('run');
+
 		$translateFilter = $builder->addDefinition($this->prefix('translateFilter'))
 			->setClass('movi\Model\Filters\TranslateFilter');
 
@@ -120,17 +124,11 @@ final class moviExtension extends CompilerExtension
 
 	private function registerRepositories(ContainerBuilder $builder)
 	{
-		$mapper = $builder->getDefinition($this->prefix('mapper'));
+		$mapping = $builder->getDefinition($this->prefix('entityMapping'));
 
-		foreach(array_keys($builder->findByTag('repository')) as $helper)
+		foreach(array_keys($builder->findByTag('repository')) as $repository)
 		{
-			$definition = $builder->getDefinition($helper);
-			$class = \Nette\Utils\PhpGenerator\Helpers::createObject($definition->class, array());
-
-			foreach ($class->getEntities() as $table => $entity)
-			{
-				$mapper->addSetup('register', array($table, $entity));
-			}
+			$mapping->addSetup('registerRepository', array('@' . $repository));
 		}
 	}
 

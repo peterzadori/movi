@@ -13,19 +13,6 @@ class Mapper extends DefaultMapper
 	/** @var string */
 	protected $defaultEntityNamespace = '\movi\Model\Entities';
 
-	/** @var array */
-	private $registry = array();
-
-
-	/**
-	 * @param $table
-	 * @param $entity
-	 */
-	public function register($table, $entity)
-	{
-		$this->registry[$table] = $this->formatEntityClassName($entity);
-	}
-
 
 	/**
 	 * @param string $table
@@ -34,8 +21,8 @@ class Mapper extends DefaultMapper
 	 */
 	public function getEntityClass($table, Row $row = NULL)
 	{
-		if (array_key_exists($table, $this->registry)) {
-			return $this->registry[$table];
+		if ($entity = EntityMapping::getEntity($table)) {
+			return $entity;
 		} else {
 			return $this->formatEntityClassName($table);
 		}
