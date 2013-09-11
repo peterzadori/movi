@@ -25,7 +25,7 @@ final class PackagesExtension extends CompilerExtension
 			->setClass('movi\Packages\Installer');
 
 		$builder->addDefinition($this->prefix('resourceInstaller'))
-			->setClass('movi\Packages\Installers\ResourceInstaller', array('%resourcesDir%'))
+			->setClass('movi\Packages\Installers\ResourceInstaller', ['%resourcesDir%'])
 			->addTag('installer');
 
 		// Process packages
@@ -40,7 +40,7 @@ final class PackagesExtension extends CompilerExtension
 
 		foreach (array_keys($builder->findByTag('installer')) as $service)
 		{
-			$installer->addSetup('register', array('@' . $service));
+			$installer->addSetup('register', ['@' . $service]);
 		}
 	}
 
@@ -87,7 +87,7 @@ final class PackagesExtension extends CompilerExtension
 				$this->processConfig($package, $builder);
 
 				// Add package to manager
-				$manager->addSetup('addPackage', array($package));
+				$manager->addSetup('addPackage', [$package]);
 			}
 		}
 	}

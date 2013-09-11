@@ -86,7 +86,7 @@
 	{!$head->startTag()}
 		{if $column->isSortable()}
 			{var sort => ($control->sorting[0] == $column->name) ? ($sort == 'ASC' ? 'DESC' : 'ASC') : $sort}
-			<a n:href="this, sorting => array($column->name, $sort)" class="ajax">{$column->label}</a>
+			<a n:href="this, sorting => [$column->name, $sort]" class="ajax">{$column->label}</a>
 		{else}
 			{$column->label}
 		{/if}
