@@ -28,7 +28,7 @@ final class LanguagesRepository extends Repository
 			}
 
 			if ($language->default === true) {
-				$this->connection->update('languages', array('default' => false))->execute();
+				$this->connection->update('languages', ['default' => false])->execute();
 			}
 		};
 
@@ -60,7 +60,7 @@ final class LanguagesRepository extends Repository
 	 */
 	public function findActive()
 	{
-		return $this->findAll(array('[active] = %i' => true));
+		return $this->findAll(['[active] = %i' => true]);
 	}
 
 }

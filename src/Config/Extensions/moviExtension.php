@@ -13,17 +13,17 @@ final class moviExtension extends CompilerExtension
 {
 
 	/** @var array */
-	private $defaults = array(
-		'language' => array(
+	private $defaults = [
+		'language' => [
 			'detect' => false
-		),
+		],
 		'project' => NULL,
-		'password' => array(
+		'password' => [
 			'salt' => NULL,
 			'algorithm' => 'sha512'
-		),
-		'macros' => array()
-	);
+		],
+		'macros' => []
+	];
 
 
 	public function loadConfiguration()
@@ -33,11 +33,11 @@ final class moviExtension extends CompilerExtension
 
 		if (isset($config['project'])) {
 			$builder->getDefinition('session')
-				->addSetup('setName', array($config['project']));
+				->addSetup('setName', [$config['project']]);
 		}
 
 		$builder->getDefinition('nette.presenterFactory')
-			->setClass('movi\Application\PresenterFactory', array($builder->parameters['appDir']));
+			->setClass('movi\Application\PresenterFactory', [$builder->parameters['appDir']]);
 
 		$builder->addDefinition($this->prefix('cacheProvider'))
 			->setClass('movi\Caching\CacheProvider');
@@ -77,7 +77,7 @@ final class moviExtension extends CompilerExtension
 
 		$initialize->addBody($container->formatPhp(
 			'Nette\Diagnostics\Debugger::$bar->addPanel(?);',
-			Compiler::filterArguments(array(new \Nette\DI\Statement('movi\Diagnostics\Stopwatch')))
+			Compiler::filterArguments([new \Nette\DI\Statement('movi\Diagnostics\Stopwatch')])
 		));
 	}
 
@@ -99,7 +99,7 @@ final class moviExtension extends CompilerExtension
 	private function initDatabase(ContainerBuilder $builder)
 	{
 		$connection = $builder->addDefinition($this->prefix('connection'))
-			->setClass('LeanMapper\Connection', array('%database%'));
+			->setClass('LeanMapper\Connection', ['%database%']);
 
 		$builder->addDefinition($this->prefix('mapper'))
 			->setClass('movi\Model\Mapper');
@@ -110,22 +110,11 @@ final class moviExtension extends CompilerExtension
 		$orderFilter = $builder->addDefinition($this->prefix('orderFilter'))
 			->setClass('movi\Model\Filters\OrderFilter');
 
-		$connection->addSetup('registerFilter', array(
-			'translate',
-			array(
-				$translateFilter,
-				'translate'
-			),
-			Connection::WIRE_PROPERTY
-		));
+		$connection->addSetup('registerFilter', [
+			'translate', [$translateFilter, 'translate'], Connection::WIRE_PROPERTY
+		]);
 
-		$connection->addSetup('registerFilter', array(
-			'order',
-			array(
-				$orderFilter,
-				'modify'
-			)
-		));
+		$connection->addSetup('registerFilter', ['order', [$orderFilter, 'modify']]);
 	}
 
 
@@ -150,7 +139,7 @@ final class moviExtension extends CompilerExtension
 	{
 		$builder->addDefinition($this->prefix('languagesRepository'))
 			->setClass('movi\Model\Repositories\LanguagesRepository')
-			->addSetup('setLocalDir', array('%localDir%'))
+			->addSetup('setLocalDir', ['%localDir%'])
 			->addTag('repository');
 
 		$builder->addDefinition($this->prefix('language'))
@@ -161,7 +150,7 @@ final class moviExtension extends CompilerExtension
 
 		$builder->addDefinition($this->prefix('translator'))
 			->setClass('movi\Localization\Translator')
-			->setArguments(array('%localDir%'))
+			->setArguments(['%localDir%'])
 			->addTag('kdyby.subscriber');
 	}
 
@@ -169,18 +158,18 @@ final class moviExtension extends CompilerExtension
 	private function initTemplating(ContainerBuilder $builder, $config)
 	{
 		$builder->addDefinition($this->prefix('templateManager'))
-			->setClass('movi\Templating\TemplateManager', array('%templatesDir%'));
+			->setClass('movi\Templating\TemplateManager', ['%templatesDir%']);
 
 		$builder->addDefinition($this->prefix('helpers'))
 			->setClass('movi\Templating\Helpers');
 
 		$builder->addDefinition($this->prefix('thumbnailHelper'))
-			->setClass('movi\Templating\Helpers\ThumbnailHelper', array('%wwwDir%'))
+			->setClass('movi\Templating\Helpers\ThumbnailHelper', ['%wwwDir%'])
 			->addTag('helper')
 			->addTag('name', 'thumbnail');
 
 		$latte = $builder->getDefinition('nette.latte');
-		$latte->addSetup('movi\Templating\Macros\moviMacros::install(?->compiler)', array('@self'));
+		$latte->addSetup('movi\Templating\Macros\moviMacros::install(?->compiler)', ['@self']);
 
 		foreach ($config['macros'] as $macro) {
 			if (strpos($macro, '::') === FALSE && class_exists($macro)) {
@@ -203,7 +192,7 @@ final class moviExtension extends CompilerExtension
 			$definition = $builder->getDefinition($helper);
 			$name = $definition->tags['name'];
 
-			$helpers->addSetup('registerHelper', array($name, '@' . $helper));
+			$helpers->addSetup('registerHelper', [$name, '@' . $helper]);
 		}
 	}
 
@@ -212,7 +201,7 @@ final class moviExtension extends CompilerExtension
 	{
 		// Password
 		$builder->addDefinition($this->prefix('password'))
-			->setClass('movi\Tools\Password', array($config['password']['salt'], $config['password']['algorithm']));
+			->setClass('movi\Tools\Password', [$config['password']['salt'], $config['password']['algorithm']]);
 
 		$builder->getDefinition('nette.userStorage')
 			->setClass('movi\Security\UserStorage');
@@ -239,7 +228,7 @@ final class moviExtension extends CompilerExtension
 			$definition = $builder->getDefinition($widget);
 			$name = $definition->tags['name'];
 
-			$widgets->addSetup('addWidget', array($name, '@' . $widget));
+			$widgets->addSetup('addWidget', [$name, '@' . $widget]);
 		}
 	}
 
@@ -247,7 +236,7 @@ final class moviExtension extends CompilerExtension
 	private function initAssets(ContainerBuilder $builder)
 	{
 		$builder->addDefinition('assets')
-			->setClass('movi\Components\Assets\AssetsManager', array('%resourcesDir%'));
+			->setClass('movi\Components\Assets\AssetsManager', ['%resourcesDir%']);
 
 		$builder->addDefinition($this->prefix('assetsControl'))
 			->setClass('movi\Components\Assets\AssetsControl')

@@ -71,7 +71,7 @@ final class ThumbnailHelper implements IHelper
 	 */
 	public function createThumbnailName($image, $width, $height = NULL)
 	{
-		$name = array();
+		$name = [];
 
 		$image = basename($image);
 		$image = explode('.', $image);

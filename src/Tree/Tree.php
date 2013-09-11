@@ -17,13 +17,13 @@ abstract class Tree extends Object
 	protected $repository;
 
 	/** @var array */
-	protected $nodes = array();
+	protected $nodes = [];
 
 	/** @var array */
-	protected $parents = array();
+	protected $parents = [];
 
 	/** @var array */
-	protected $children = array();
+	protected $children = [];
 
 	protected $root;
 
@@ -89,9 +89,9 @@ abstract class Tree extends Object
 	public function rebuild()
 	{
 		$this->built = false;
-		$this->nodes = array();
-		$this->children = array();
-		$this->parents = array();
+		$this->nodes = [];
+		$this->children = [];
+		$this->parents = [];
 
 		$this->build();
 	}
@@ -329,7 +329,7 @@ abstract class Tree extends Object
 			return $this->parents;
 		}
 
-		$parents = array();
+		$parents = [];
 		while ($node->parent !== NULL)
 		{
 			$node = $this->nodes[$node->parent->id];
@@ -354,7 +354,7 @@ abstract class Tree extends Object
 			if (isset($this->children[$node->id])) {
 				return $this->children[$node->id];
 			} else {
-				return array();
+				return [];
 			}
 		}
 	}
@@ -365,7 +365,7 @@ abstract class Tree extends Object
 	 * @param array $tree
 	 * @return array
 	 */
-	public function getChildrenRecursively($node, &$tree = array())
+	public function getChildrenRecursively($node, &$tree = [])
 	{
 		$children = $this->getChildren($node);
 
@@ -388,7 +388,7 @@ abstract class Tree extends Object
 	 */
 	public function getSiblings($node)
 	{
-		$siblings = array();
+		$siblings = [];
 		$nodes = $this->getChildren($node->parent);
 
 		foreach ($nodes as $sibling)
@@ -412,7 +412,7 @@ abstract class Tree extends Object
 	{
 		$nodes = $this->getParents($node);
 		$nodes[] = $node;
-		$path = array();
+		$path = [];
 
 		foreach ($nodes as $part)
 		{
@@ -430,7 +430,7 @@ abstract class Tree extends Object
 	 * @param array $options
 	 * @return array
 	 */
-	public function getArray($exclude = NULL, $nodes = array(), $level = 0, &$options = array())
+	public function getArray($exclude = NULL, $nodes = [], $level = 0, &$options = [])
 	{
 		if ($level === 0) {
 			$nodes = $this->parents;
@@ -462,7 +462,7 @@ abstract class Tree extends Object
 	 * @param array $tree
 	 * @return array
 	 */
-	public function getTree($children = array(), &$tree = array())
+	public function getTree($children = [], &$tree = [])
 	{
 		if (empty($children) && empty($tree)) {
 			$children = $this->parents;

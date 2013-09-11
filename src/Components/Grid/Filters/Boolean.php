@@ -7,7 +7,7 @@ class Boolean extends Select
 
 	public function __construct()
 	{
-		$this->values = array(true => 'Áno', false => 'Nie');
+		$this->values = [true => 'Áno', false => 'Nie'];
 	}
 
 

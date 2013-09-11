@@ -34,7 +34,7 @@ final class PresenterFactory extends Nette\Application\PresenterFactory
 
 		foreach (array_reverse(get_class_methods($presenter)) as $method) {
 			if (substr($method, 0, 6) === 'inject') {
-				$this->container->callMethod(array($presenter, $method));
+				$this->container->callMethod([$presenter, $method]);
 			}
 		}
 

@@ -86,7 +86,7 @@ class Identity extends Object implements \Serializable, IIdentity
 	 */
 	public function serialize()
 	{
-		return serialize(array($this->id, $this->roles, $this->token));
+		return serialize([$this->id, $this->roles, $this->token]);
 	}
 
 

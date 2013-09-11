@@ -38,12 +38,12 @@ final class Loader
 
 		// Parse JSON data
 		$data->title = (isset($data->title)) ? $data->title : NULL;
-		$data->require = (isset($data->require)) ? $data->require : array();
-		$data->config = (isset($data->config)) ? $data->config : array();
-		$data->resources = (isset($data->resources)) ? $data->resources : array();
-		$data->sql = (isset($data->sql)) ? $data->sql : array();
+		$data->require = (isset($data->require)) ? $data->require : [];
+		$data->config = (isset($data->config)) ? $data->config : [];
+		$data->resources = (isset($data->resources)) ? $data->resources : [];
+		$data->sql = (isset($data->sql)) ? $data->sql : [];
 		$data->dir = $this->package->getPathname();
-		$data->extensions = (isset($data->extensions)) ? $data->extensions : array();
+		$data->extensions = (isset($data->extensions)) ? $data->extensions : [];
 
 		return (array) $data;
 	}

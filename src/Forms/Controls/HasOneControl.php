@@ -97,7 +97,7 @@ final class HasOneControl extends BaseControl
 	 */
 	public function setItems(array $items)
 	{
-		$rows = array();
+		$rows = [];
 
 		foreach ($items as $item)
 		{
@@ -132,7 +132,7 @@ final class HasOneControl extends BaseControl
 	public function getControl()
 	{
 		$selected = $this->getValue();
-		$selected = $selected === NULL ? NULL : array($selected->id => TRUE);
+		$selected = $selected === NULL ? NULL : [$selected->id => TRUE];
 		$control = parent::getControl();
 		$option = Html::el('option');
 

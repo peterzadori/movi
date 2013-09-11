@@ -20,7 +20,7 @@ final class Date extends Filter
 		$begin = strtotime('today', $value);
 		$end = strtotime('+1 day', $begin);
 
-		$dataSource->filter(array('%n BETWEEN %s AND %s', $this->column->getColumn(), DateTime::from($begin), DateTime::from($end)));
+		$dataSource->filter(['%n BETWEEN %s AND %s', $this->column->getColumn(), DateTime::from($begin), DateTime::from($end)]);
 	}
 
 

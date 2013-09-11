@@ -19,22 +19,22 @@ class AssetsManager extends Object
 	private $resourcesDir;
 
 	/** @var array */
-	private $supported = array('*.css', '*.js');
+	private $supported = ['*.css', '*.js'];
 
 	/** @var array */
-	private $dirs = array();
+	private $dirs = [];
 
 	/** @var array(\SplFileInfo => relative_path) */
-	private $files = array();
+	private $files = [];
 
 	/** @var array */
-	private $ignored = array();
+	private $ignored = [];
 
 	/** @var array */
-	private $css = array();
+	private $css = [];
 
 	/** @var array */
-	private $js = array();
+	private $js = [];
 
 	/** @var \Nette\Caching\Cache */
 	private $cache;
@@ -92,9 +92,9 @@ class AssetsManager extends Object
 		$hash = md5(serialize($this->dirs)) . md5(serialize($this->files));
 
 		if ($this->cache->load('hash') !== $hash) {
-			$files = array();
-			$css = array();
-			$js = array();
+			$files = [];
+			$css = [];
+			$js = [];
 
 			// Find files in dirs
 			foreach ($this->dirs as $dir)
@@ -105,7 +105,7 @@ class AssetsManager extends Object
 					continue;
 				}
 
-				$tmp = array();
+				$tmp = [];
 
 				foreach(Finder::find($this->supported)->from($dir) as $file)
 				{
@@ -150,7 +150,7 @@ class AssetsManager extends Object
 			}
 
 			$this->cache->save('hash', $hash);
-			$this->cache->save('files', array($css, $js));
+			$this->cache->save('files', [$css, $js]);
 		}
 
 		list($this->css, $this->js) = $this->cache->load('files');

@@ -39,7 +39,7 @@ final class Translator implements ITranslator, Subscriber
 
 	public function getSubscribedEvents()
 	{
-		return array('movi\Localization\Language::onSet');
+		return ['movi\Localization\Language::onSet'];
 	}
 
 
@@ -50,7 +50,7 @@ final class Translator implements ITranslator, Subscriber
 	{
 		if ($this->cache->load($language->id) === NULL) {
 			$file = sprintf('%s/%s.neon', $this->localDir, $language->code);
-			$translations = array();
+			$translations = [];
 
 			if (file_exists($file) && is_readable($file)) {
 				$translations = Neon::decode(file_get_contents($file));
@@ -58,9 +58,9 @@ final class Translator implements ITranslator, Subscriber
 				$this->process($translations);
 			}
 
-			$this->cache->save($language->id, $translations, array(
+			$this->cache->save($language->id, $translations, [
 				Cache::FILES => $file
-			));
+			]);
 		}
 
 		$this->translations = $this->cache->load($language->id);
@@ -126,7 +126,7 @@ final class Translator implements ITranslator, Subscriber
 	private function process(array &$translations = NULL)
 	{
 		if ($translations !== NULL) {
-			$presenters = array();
+			$presenters = [];
 
 			if (isset($translations[self::PRESENTERS])) {
 				$presenters = $translations[self::PRESENTERS];
@@ -145,7 +145,7 @@ final class Translator implements ITranslator, Subscriber
 	 * @param array $return
 	 * @return array
 	 */
-	private function flatten($array, $index = '', &$return = array())
+	private function flatten($array, $index = '', &$return = [])
 	{
 		foreach ($array as $key => $value)
 		{

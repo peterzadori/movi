@@ -15,8 +15,8 @@ class moviMacros extends MacroSet
 	public static function install(Compiler $compiler)
 	{
 		$set = new static($compiler);
-		$set->addMacro('widget', array($set, 'macroWidget'));
-		$set->addMacro('icon', "echo Nette\\Utils\\Html::el('i')->class(implode('-', array('icon', %node.word))); ");
+		$set->addMacro('widget', [$set, 'macroWidget']);
+		$set->addMacro('icon', "echo Nette\\Utils\\Html::el('i')->class(implode('-', ['icon', %node.word])); ");
 	}
 
 

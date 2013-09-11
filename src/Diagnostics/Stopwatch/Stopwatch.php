@@ -9,7 +9,7 @@ final class Stopwatch implements IBarPanel
 {
 
 	/** @var array */
-	private static $timers = array();
+	private static $timers = [];
 
 
 	public static function start($name)

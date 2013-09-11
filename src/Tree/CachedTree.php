@@ -66,9 +66,9 @@ class CachedTree extends Tree
 			$this->repository->persist($node);
 		}
 
-		$this->cache->save($this->language->getCurrent()->id, true, array(
-			Cache::TAGS => array(get_called_class())
-		));
+		$this->cache->save($this->language->getCurrent()->id, true, [
+			Cache::TAGS => [get_called_class()]
+		]);
 	}
 
 
@@ -101,9 +101,9 @@ class CachedTree extends Tree
 
 	private function cleanCache()
 	{
-		$this->cache->clean(array(
+		$this->cache->clean([
 			Cache::TAGS => get_called_class()
-		));
+		]);
 	}
 
 }

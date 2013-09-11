@@ -12,7 +12,7 @@ abstract class CompilerExtension extends \Nette\Config\CompilerExtension
 	protected function getSortedServices($tag)
 	{
 		$builder = $this->getContainerBuilder();
-		$sorted = array();
+		$sorted = [];
 
 		foreach(array_keys($builder->findByTag($tag)) as $service)
 		{

@@ -66,7 +66,7 @@ class Boolean extends Column
 			$primaryKey = $this->getGrid()->getPrimaryKey();
 
 			if (($this->disabled !== NULL && $this->disabled->invoke($row) === true) || $this->disabled === NULL) {
-				$el = Html::el('a')->href($this->link('click', array('row' => $row->{$primaryKey})));
+				$el = Html::el('a')->href($this->link('click', ['row' => $row->__get($primaryKey)]));
 				$el->class[] = ($this->ajax === true) ? 'ajax' : NULL;
 				$el->add($icon);
 			}

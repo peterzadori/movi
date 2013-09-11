@@ -39,7 +39,7 @@ class Button extends Component
 		if (isset($rows[$this->row])) {
 			$row = $rows[$this->row];
 
-			if (($this->disabled !== NULL && $this->disabled->invoke($row) === true) || $this->disabled === NULL) {
+			if (($this->disabled !== NULL && $this->disabled->invoke($row) === false) || $this->disabled === NULL) {
 				$this->callback->invoke($row);
 			}
 		}
@@ -76,7 +76,7 @@ class Button extends Component
 		if ($this->callback !== NULL) {
 			$primaryKey = $this->getGrid()->getPrimaryKey();
 
-			$button->href($this->link('click', array('row' => $row->{$primaryKey})));
+			$button->href($this->link('click', ['row' => $row->__get($primaryKey)]));
 		}
 
 		$button->setText($this->label);

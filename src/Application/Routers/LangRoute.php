@@ -11,7 +11,7 @@ class LangRoute extends Route
 	private $languageMask = '[<lang>/]';
 
 
-	public function __construct($mask, $metadata = array(), Languages $languages)
+	public function __construct($mask, $metadata = [], Languages $languages)
 	{
 		if (count($languages->getLanguages()) > 1) {
 			$mask = $this->languageMask . $mask;

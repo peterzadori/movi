@@ -40,7 +40,7 @@ class Select extends Filter
 			if ($value === 'false') $value = false;
 		}
 
-		$dataSource->filter(array('%n = %s', $this->column->getColumn(), $value));
+		$dataSource->filter(['%n = %s', $this->column->getColumn(), $value]);
 	}
 
 }

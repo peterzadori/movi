@@ -11,7 +11,7 @@ interface IDataSource
 
 	public function sort(array $sorting);
 
-	public function filter($condition = array());
+	public function filter($condition = []);
 
 	public function limit($limit, $offset);
 

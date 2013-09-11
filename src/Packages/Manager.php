@@ -9,7 +9,7 @@ final class Manager
 {
 
 	/** @var array */
-	private $packages = array();
+	private $packages = [];
 
 
 	/**

@@ -14,7 +14,7 @@ final class Integer extends Filter
 	 */
 	public function filter($value, IDataSource $dataSource)
 	{
-		$dataSource->filter(array('%n = %i', $this->column->getColumn(), $value));
+		$dataSource->filter(['%n = %i', $this->column->getColumn(), $value]);
 	}
 
 }

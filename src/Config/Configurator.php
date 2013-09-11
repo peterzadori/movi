@@ -81,7 +81,7 @@ final class Configurator extends Nette\Config\Configurator
 		$collection = new movi\Packages\Installed($this->parameters['packagesDir']);
 		$packages = $collection->getPackages();
 
-		$this->parameters['packages'] = array();
+		$this->parameters['packages'] = [];
 
 		if (count($packages) > 0) {
 			foreach ($packages as $name => $package)

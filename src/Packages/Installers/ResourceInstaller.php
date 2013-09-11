@@ -41,7 +41,7 @@ class ResourceInstaller implements IInstaller
 
 	private function copy($dir, $targetDir)
 	{
-		$files = array();
+		$files = [];
 
 		/** @var $file \SplFileInfo */
 		foreach (Finder::find('*')->from($dir) as $file)

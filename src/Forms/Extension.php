@@ -73,7 +73,7 @@ final class FormExtension
 			$control->addCondition(Form::FILLED)
 				->addRule(Form::NUMERIC);
 
-			$range = array();
+			$range = [];
 			if ($min !== NULL) {
 				$control->setAttribute('min', $min);
 				$range[0] = $min;
@@ -84,7 +84,7 @@ final class FormExtension
 				$range[1] = $max;
 			}
 
-			if ($range != array(NULL, NULL)) {
+			if ($range != [NULL, NULL]) {
 				$control->addCondition(Form::FILLED)
 					->addRule(Form::RANGE, NULL, $range);
 			}

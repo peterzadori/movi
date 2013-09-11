@@ -46,7 +46,7 @@ abstract class Repository extends \LeanMapper\Repository
 	 */
 	public function find($id)
 	{
-		return $this->findBy(array('[id] = %i' => $id));
+		return $this->findBy(['[id] = %i' => $id]);
 	}
 
 
@@ -83,7 +83,7 @@ abstract class Repository extends \LeanMapper\Repository
 	 * @param null $limit
 	 * @return Entity[]
 	 */
-	public function findAll(array $conditions = NULL, array $sorting = array(), $offset = NULL, $limit = NULL)
+	public function findAll(array $conditions = NULL, array $sorting = [], $offset = NULL, $limit = NULL)
 	{
 		$statement = $this->getStatement();
 
@@ -128,7 +128,7 @@ abstract class Repository extends \LeanMapper\Repository
 
 	private function initKdybyEvents()
 	{
-		static $events = array(
+		static $events = [
 			Events::EVENT_BEFORE_PERSIST,
 			Events::EVENT_BEFORE_CREATE,
 			Events::EVENT_BEFORE_UPDATE,
@@ -137,7 +137,7 @@ abstract class Repository extends \LeanMapper\Repository
 			Events::EVENT_AFTER_CREATE,
 			Events::EVENT_AFTER_UPDATE,
 			Events::EVENT_AFTER_DELETE,
-		);
+		];
 
 		foreach ($events as $eventName) {
 			$ns = get_called_class();
@@ -169,9 +169,9 @@ abstract class Repository extends \LeanMapper\Repository
 	public function getEntities()
 	{
 		if (isset($this->getAnnotations()['entity'])) {
-			return array($this->getTable() => $this->getAnnotations()['entity'][0]);
+			return [$this->getTable() => $this->getAnnotations()['entity'][0]];
 		} else {
-			return array();
+			return [];
 		}
 	}
 

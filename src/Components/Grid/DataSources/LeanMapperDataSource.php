@@ -49,15 +49,15 @@ class LeanMapperDataSource implements IDataSource
 	}
 
 
-	public function filter($condition = array())
+	public function filter($condition = [])
 	{
-		call_user_func_array(array($this->statement, 'where'), $condition);
+		call_user_func_array([$this->statement, 'where'], $condition);
 	}
 
 
 	public function limit($limit, $offset)
 	{
-		$this->statement->limit(array($offset, $limit));
+		$this->statement->limit([$offset, $limit]);
 	}
 
 

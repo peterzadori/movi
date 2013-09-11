@@ -36,7 +36,7 @@ class TreeDataSource implements IDataSource
 	}
 
 
-	public function filter($condition = array())
+	public function filter($condition = [])
 	{
 
 	}

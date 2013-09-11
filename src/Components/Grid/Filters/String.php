@@ -14,7 +14,7 @@ final class String extends Filter
 	 */
 	public function filter($value, IDataSource $dataSource)
 	{
-		$dataSource->filter(array('LOWER(%n) LIKE %~like~', $this->column->getColumn(), $value));
+		$dataSource->filter(['LOWER(%n) LIKE %~like~', $this->column->getColumn(), $value]);
 	}
 
 }

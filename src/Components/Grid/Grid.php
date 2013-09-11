@@ -27,7 +27,7 @@ class Grid extends Control
 	public $sorting;
 
 	/** @persistent */
-	public $filter = array();
+	public $filter = [];
 
 	/** @var array */
 	private $defaultSorting;
@@ -42,7 +42,7 @@ class Grid extends Control
 	private $dataSource;
 
 	/** @var array */
-	private $actions = array();
+	private $actions = [];
 
 	/** @var Html */
 	private $table;
@@ -83,7 +83,7 @@ class Grid extends Control
 		};
 
 		// Set default sorting
-		$this->defaultSorting = array($this->primaryKey, 'DESC');
+		$this->defaultSorting = [$this->primaryKey, 'DESC'];
 	}
 
 
@@ -195,7 +195,7 @@ class Grid extends Control
 	 */
 	public function getRows()
 	{
-		$this->rows = array();
+		$this->rows = [];
 
 		$dataSource = $this->dataSource->getClone();
 
@@ -527,7 +527,7 @@ class Grid extends Control
 
 			if (count($items) > 0) {
 				$data = $this->getRows();
-				$rows = array();
+				$rows = [];
 
 				foreach ($items as $item => $checked)
 				{
