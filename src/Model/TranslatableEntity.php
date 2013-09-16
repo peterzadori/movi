@@ -5,7 +5,7 @@ namespace movi\Model;
 /**
  * Class TranslatableEntity
  * @package movi\Model
- * @property \movi\Model\Entities\Language $language m:hasOne(language_id:languages)
+ * @property \movi\Model\Entities\Language $language m:hasOne(language_id:languages) m:translate
  */
 abstract class TranslatableEntity extends IdentifiedEntity
 {
