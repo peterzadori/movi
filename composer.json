@@ -18,7 +18,8 @@
 		"kdyby/console": "dev-nette-2.0",
 		"Kdyby/bootstrap-form-renderer": "@dev",
 		"gavroche/browser": "@dev",
-		"vojtech-dobes/nette-forms-inputlist": "@dev"
+		"vojtech-dobes/nette-forms-inputlist": "@dev",
+		"doctrine/dbal": "@dev"
 	},
 	"require-dev": {
 		"nette/tester": "dev-master"
