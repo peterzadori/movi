@@ -2,12 +2,13 @@
 
 namespace movi\Packages;
 
+use Kdyby\Events\Subscriber;
 use Nette\Caching\Cache;
 use Nette\DI\Container;
 use Nette\Utils\Json;
 use movi\Caching\CacheProvider;
 
-final class Installer
+final class Installer implements Subscriber
 {
 
 	/** @var \movi\Packages\Manager */
@@ -28,12 +29,24 @@ final class Installer
 	}
 
 
+	public function getSubscribedEvents()
+	{
+		return ['Nette\DI\Container::onInitialize'];
+	}
+
+
 	/**
 	 * @param IInstaller $installer
 	 */
 	public function registerInstaller(IInstaller $installer)
 	{
 		$this->installers[] = $installer;
+	}
+
+
+	public function onInitialize()
+	{
+		$this->install();
 	}
 
 

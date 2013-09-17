@@ -22,7 +22,8 @@ final class PackagesExtension extends CompilerExtension
 			->setClass('movi\Packages\Manager');
 
 		$builder->addDefinition($this->prefix('installer'))
-			->setClass('movi\Packages\Installer');
+			->setClass('movi\Packages\Installer')
+			->addTag('kdyby.subscriber');
 
 		$builder->addDefinition($this->prefix('resourceInstaller'))
 			->setClass('movi\Packages\Installers\ResourceInstaller', ['%resourcesDir%'])
@@ -46,14 +47,6 @@ final class PackagesExtension extends CompilerExtension
 		{
 			$installer->addSetup('registerInstaller', ['@' . $service]);
 		}
-	}
-
-
-	public function afterCompile(ClassType $container)
-	{
-		$initialize = $container->methods['initialize'];
-
-		$initialize->addBody('$this->getService("packages.installer")->install();');
 	}
 
 
