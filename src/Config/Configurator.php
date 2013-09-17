@@ -6,6 +6,7 @@ use Kdyby;
 use Nette;
 use movi;
 use VojtechDobes\NetteForms\InputListExtension;
+use movi\Packages\Collections\InstalledPackages;
 
 final class Configurator extends Nette\Config\Configurator
 {
@@ -78,17 +79,10 @@ final class Configurator extends Nette\Config\Configurator
 	 */
 	private function createPackages()
 	{
-		$collection = new movi\Packages\Installed($this->parameters['packagesDir']);
+		$collection = new InstalledPackages($this->parameters['packagesDir']);
 		$packages = $collection->getPackages();
 
-		$this->parameters['packages'] = [];
-
-		if (count($packages) > 0) {
-			foreach ($packages as $name => $package)
-			{
-				$this->parameters['packages'][$name] = $package;
-			}
-		}
+		$this->parameters['packages'] = $packages;
 	}
 
 

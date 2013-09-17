@@ -1,12 +1,16 @@
 <?php
 
-namespace movi\Packages;
+namespace movi\Packages\Collections;
 
-use Nette\Utils\Finder;
 use movi\PackageRegisteredException;
+use movi\Packages\ICollection;
+use movi\Packages\Loader;
+use Nette\Utils\Finder;
 
-class Installed extends Collection
+class InstalledPackages implements ICollection
 {
+
+	private $packages = [];
 
 	/** @var string */
 	private $packagesDir;
@@ -17,6 +21,15 @@ class Installed extends Collection
 		$this->packagesDir = $packagesDir;
 
 		$this->findPackages();
+	}
+
+
+	/**
+	 * @return mixed
+	 */
+	public function getPackages()
+	{
+		return $this->packages;
 	}
 
 
