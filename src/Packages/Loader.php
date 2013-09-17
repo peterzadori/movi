@@ -25,22 +25,22 @@ final class Loader
 
 
 	/**
-	 * @return BasePackage|Package
+	 * @return array
 	 * @throws \movi\InvalidArgumentException
 	 */
 	private function createPackage()
 	{
 		$data = $this->parseJson();
 
-		if (!isset($data->name)) {
+		if (!isset($data['name'])) {
 			throw new InvalidArgumentException("Unknown package name.");
 		}
 
 		// Parse JSON data
-		$data->config = (isset($data->config)) ? $data->config : [];
-		$data->resources = (isset($data->resources)) ? $data->resources : [];
-		$data->dir = $this->package->getPathname();
-		$data->extensions = (isset($data->extensions)) ? $data->extensions : [];
+		$data['config'] = (isset($data['config'])) ? $data['config'] : [];
+		$data['resources'] = (isset($data['resources'])) ? $data['resources'] : [];
+		$data['dir'] = $this->package->getPathname();
+		$data['extensions'] = (isset($data['extensions'])) ? $data['extensions'] : [];
 
 		return (array) $data;
 	}
