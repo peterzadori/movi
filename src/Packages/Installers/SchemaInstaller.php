@@ -32,18 +32,20 @@ final class SchemaInstaller implements IInstaller
 	 */
 	public function install(Package $package)
 	{
-		if (!($package instanceof SchemaPackage)) {
-			return false;
-		}
+		if (count($package->schemas) > 0) {
+			foreach ($package->schemas as $class)
+			{
+				/** @var \movi\Schemas\SchemaFactory $factory */
+				$factory = new $class;
+				$schema = $factory->createSchema();
 
-		$schema = new Schema();
+				$queries = $schema->toSql($this->platform);
 
-		$package->createSchema($schema);
-		$queries = $schema->toSql($this->platform);
-
-		foreach ($queries as $query)
-		{
-			$this->connection->query($query);
+				foreach ($queries as $query)
+				{
+					$this->connection->query($query);
+				}
+			}
 		}
 
 		return true;

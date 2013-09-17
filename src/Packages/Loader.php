@@ -41,8 +41,9 @@ final class Loader
 		$data['resources'] = (isset($data['resources'])) ? $data['resources'] : [];
 		$data['dir'] = $this->package->getPathname();
 		$data['extensions'] = (isset($data['extensions'])) ? $data['extensions'] : [];
+		$data['schemas'] = (isset($data['schemas'])) ? $data['schemas'] : [];
 
-		return (array) $data;
+		return $data;
 	}
 
 

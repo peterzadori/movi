@@ -24,6 +24,9 @@ class Package extends Object
 	/** @var array */
 	public $extensions;
 
+	/** @var array */
+	public $schemas;
+
 
 	public function __construct($data)
 	{
@@ -32,6 +35,7 @@ class Package extends Object
 		$this->resources = $data['resources'];
 		$this->dir = $data['dir'];
 		$this->extensions = $data['extensions'];
+		$this->schemas = $data['schemas'];
 	}
 
 
