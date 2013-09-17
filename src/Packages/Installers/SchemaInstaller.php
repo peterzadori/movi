@@ -44,7 +44,11 @@ final class SchemaInstaller implements IInstaller
 
 					foreach ($queries as $query)
 					{
-						$this->connection->query($query);
+						try {
+							$this->connection->query($query);
+						} catch (\DibiDriverException $e) {
+
+						}
 					}
 				}
 			}
