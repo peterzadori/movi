@@ -4,18 +4,13 @@ namespace movi\Packages;
 
 use Nette\Config\Compiler;
 use Nette\DI\Container;
+use Nette\Object;
 
-abstract class Package
+class Package extends Object
 {
 
 	/** @var string */
 	public $name;
-
-	/** @var string */
-	public $title;
-
-	/** @var array */
-	public $require;
 
 	/** @var array */
 	public $config;
@@ -23,23 +18,18 @@ abstract class Package
 	/** @var array */
 	public $resources;
 
-	/** @var array */
-	public $sql;
-
 	/** @var string */
 	public $dir;
 
+	/** @var array */
 	public $extensions;
 
 
 	public function __construct($data)
 	{
 		$this->name = $data['name'];
-		$this->title = $data['title'];
-		$this->require = $data['require'];
 		$this->config = $data['config'];
 		$this->resources = $data['resources'];
-		$this->sql = $data['sql'];
 		$this->dir = $data['dir'];
 		$this->extensions = $data['extensions'];
 	}
@@ -48,22 +38,7 @@ abstract class Package
 	/**
 	 * @param Compiler $compiler
 	 */
-	public function compile(Compiler $compiler)
-	{
-
-	}
-
-
-	/**
-	 * Check if package's installation is valid
-	 */
-	public abstract  function isValid(Container $container);
-
-
-	/**
-	 * @param Container $container
-	 */
-	public function install(Container $container)
+	public function onCompile(Compiler $compiler)
 	{
 
 	}

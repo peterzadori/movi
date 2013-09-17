@@ -23,6 +23,7 @@ final class Installer
 	public function __construct(Manager $manager, CacheProvider $cacheProvider)
 	{
 		$this->manager = $manager;
+
 		$this->cache = $cacheProvider->create('movi.packages.installer');
 	}
 
@@ -30,7 +31,7 @@ final class Installer
 	/**
 	 * @param IInstaller $installer
 	 */
-	public function register(IInstaller $installer)
+	public function registerInstaller(IInstaller $installer)
 	{
 		$this->installers[] = $installer;
 	}
@@ -44,7 +45,7 @@ final class Installer
 			$hash = sha1(Json::encode($package));
 
 			// Load cache
-			if ($this->cache->load($package->name) == NULL || $this->cache->load($package->name) != $hash) {
+			if ($this->cache->load($package->name) === NULL || $this->cache->load($package->name) !== $hash) {
 				$this->installPackage($package);
 
 				$this->cache->save($package->name, $hash);

@@ -26,7 +26,11 @@ final class PackagesExtension extends CompilerExtension
 
 		$builder->addDefinition($this->prefix('resourceInstaller'))
 			->setClass('movi\Packages\Installers\ResourceInstaller', ['%resourcesDir%'])
-			->addTag('installer');
+			->addTag('packages.installer');
+
+		$builder->addDefinition($this->prefix('schemaInstaller'))
+			->setClass('movi\Packages\Installers\SchemaInstaller')
+			->addTag('packages.installer');
 
 		// Process packages
 		$this->processPackages($builder);
@@ -38,9 +42,9 @@ final class PackagesExtension extends CompilerExtension
 		$builder = $this->getContainerBuilder();
 		$installer = $builder->getDefinition($this->prefix('installer'));
 
-		foreach (array_keys($builder->findByTag('installer')) as $service)
+		foreach (array_keys($builder->findByTag('packages.installer')) as $service)
 		{
-			$installer->addSetup('register', ['@' . $service]);
+			$installer->addSetup('registerInstaller', ['@' . $service]);
 		}
 	}
 
@@ -60,7 +64,7 @@ final class PackagesExtension extends CompilerExtension
 	private function processPackages(ContainerBuilder $builder)
 	{
 		$manager = $builder->getDefinition($this->prefix('manager'));
-		$packages = $builder->parameters['packages']; // array
+		$packages = $builder->parameters['packages'];
 
 		if (count($packages) > 0) {
 			foreach (array_values($packages) as $data)
@@ -74,19 +78,16 @@ final class PackagesExtension extends CompilerExtension
 						throw new InvalidArgumentException("Package class must be an instance of movi\\Packages\\Package.");
 					}
 				} else {
-					$package = new BasePackage($data);
+					$package = new Package($data);
 				}
 
 				// Compile the package
-				$package->compile($this->compiler);
+				$package->onCompile($this->compiler);
 
-				// Process package's extensions
-				$this->processExtensions($package);
+				$this->processExtensions($package->extensions);
 
-				// Process package's configuration
-				$this->processConfig($package, $builder);
+				$this->processConfigs($package, $builder);
 
-				// Add package to manager
 				$manager->addSetup('addPackage', [$package]);
 			}
 		}
@@ -94,15 +95,13 @@ final class PackagesExtension extends CompilerExtension
 
 
 	/**
-	 * @param Package $package
+	 * @param array $extensions
 	 */
-	private function processExtensions(Package $package)
+	private function processExtensions(array $extensions)
 	{
-		if (count($package->extensions) > 0) {
-			foreach ($package->extensions as $name => $extension)
-			{
-				$this->compiler->addExtension($name, new $extension);
-			}
+		foreach ($extensions as $name => $extension)
+		{
+			$this->compiler->addExtension($name, new $extension);
 		}
 	}
 
@@ -111,24 +110,22 @@ final class PackagesExtension extends CompilerExtension
 	 * @param Package $package
 	 * @param ContainerBuilder $builder
 	 */
-	private function processConfig(Package $package, ContainerBuilder $builder)
+	private function processConfigs(Package $package, ContainerBuilder $builder)
 	{
-		if (!empty($package->config)) {
-			foreach ($package->config as $file)
-			{
-				$file = ltrim($file, '/');
-				$file = $package->dir . '/' . $file;
+		foreach ($package->config as $file)
+		{
+			$file = ltrim($file, '/');
+			$file = $package->dir . '/' . $file;
 
-				$config = $this->loadFromFile($file);
+			$config = $this->loadFromFile($file);
 
-				// Parameters
-				if (isset($config['parameters'])) {
-					$builder->parameters = Helpers::merge($builder->parameters, $config['parameters']);
-				}
-
-				// Parse configuration file
-				$this->compiler->parseServices($builder, $config);
+			// Parameters
+			if (isset($config['parameters'])) {
+				$builder->parameters = Helpers::merge($builder->parameters, $config['parameters']);
 			}
+
+			// Parse configuration file
+			$this->compiler->parseServices($builder, $config);
 		}
 	}
 
