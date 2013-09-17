@@ -58,7 +58,7 @@ final class Loader
 			throw new FileNotFoundException("JSON file for package '" . $this->package->getFilename() . "' was not found or is not readable.");
 		}
 
-		return Json::decode(file_get_contents($file));
+		return Json::decode(file_get_contents($file), Json::FORCE_ARRAY);
 	}
 
 }
