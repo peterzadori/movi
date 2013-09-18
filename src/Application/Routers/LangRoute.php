@@ -8,6 +8,7 @@ use Nette\Application\Routers\Route;
 class LangRoute extends Route
 {
 
+	/** @var string */
 	private $languageMask = '[<lang>/]';
 
 

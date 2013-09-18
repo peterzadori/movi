@@ -40,7 +40,7 @@ class CachedTree extends Tree
 			$this->cleanCache();
 		};
 
-		$repository->onAfterPersist[] = function() {
+		$repository->onAfterDelete[] = function() {
 			$this->cleanCache();
 		};
 

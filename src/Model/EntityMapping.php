@@ -5,9 +5,13 @@ namespace movi\Model;
 class EntityMapping
 {
 
+	/** @var array */
 	private static $entities;
 
 
+	/**
+	 * @param Repository $repository
+	 */
 	public static function registerRepository(Repository $repository)
 	{
 		foreach ($repository->getEntities() as $table => $entity)
@@ -17,6 +21,10 @@ class EntityMapping
 	}
 
 
+	/**
+	 * @param $table
+	 * @return bool
+	 */
 	public static function getEntity($table)
 	{
 		if (!array_key_exists($table, self::$entities)) {
