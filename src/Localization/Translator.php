@@ -9,7 +9,7 @@ use Nette\Utils\Neon;
 use movi\Caching\CacheProvider;
 use movi\Model\Entities\Language as LanguageEntity;
 
-final class Translator implements ITranslator, Subscriber
+final class Translator implements ITranslator
 {
 
 	const IN = 'in',
@@ -28,26 +28,23 @@ final class Translator implements ITranslator, Subscriber
 	/** @var \Nette\Caching\Cache */
 	private $cache;
 
+	/** @var bool */
+	private $loaded = false;
+
 
 	public function __construct($localDir, Language $language, CacheProvider $cacheProvider)
 	{
 		$this->localDir = $localDir;
 		$this->language = $language;
+
 		$this->cache = $cacheProvider->create('movi.translations');
 	}
 
 
-	public function getSubscribedEvents()
+	private function loadTranslations()
 	{
-		return ['movi\Localization\Language::onSet'];
-	}
+		$language = $this->language->getLanguage();
 
-
-	/**
-	 * @param $language
-	 */
-	public function onSet(LanguageEntity $language)
-	{
 		if ($this->cache->load($language->id) === NULL) {
 			$file = sprintf('%s/%s.neon', $this->localDir, $language->code);
 			$translations = [];
@@ -76,47 +73,18 @@ final class Translator implements ITranslator, Subscriber
 	{
 		// Language must be set
 		if ($this->language->isLanguageSet()) {
+			if (!$this->loaded) {
+				$this->loadTranslations();
+
+				$this->loaded = true;
+			}
+
 			if (array_key_exists($message, $this->translations)) {
 				return $this->translations[$message];
 			}
 		}
 
 		return $message;
-	}
-
-
-	/**
-	 * @param $presenter
-	 * @param string $way
-	 * @return string
-	 */
-	public function translatePresenter($presenter, $way = 'out')
-	{
-		if ($this->language->isLanguageSet() && isset($this->translations[self::PRESENTERS])) {
-			$presenters = $this->translations[self::PRESENTERS];
-			$presenter = strtolower($presenter);
-
-			switch ($way)
-			{
-				case self::IN:
-					$presenters = array_flip($presenters);
-
-					if (isset($presenters[$presenter])) {
-						$presenter = $presenters[$presenter];
-					}
-					break;
-
-				case self::OUT:
-					if (isset($presenters[$presenter])) {
-						$presenter = $presenters[$presenter];
-					}
-					break;
-			}
-		} else {
-			$presenter = strtolower($presenter);
-		}
-
-		return $presenter;
 	}
 
 
