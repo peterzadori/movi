@@ -12,10 +12,6 @@ use movi\Model\Entities\Language as LanguageEntity;
 final class Translator implements ITranslator
 {
 
-	const IN = 'in',
-		OUT = 'out',
-		PRESENTERS = 'presenters';
-
 	/** @var string */
 	private $localDir;
 
@@ -94,15 +90,7 @@ final class Translator implements ITranslator
 	private function process(array &$translations = NULL)
 	{
 		if ($translations !== NULL) {
-			$presenters = [];
-
-			if (isset($translations[self::PRESENTERS])) {
-				$presenters = $translations[self::PRESENTERS];
-				unset($translations[self::PRESENTERS]);
-			}
-
 			$translations = $this->flatten($translations);
-			$translations[self::PRESENTERS] = $presenters;
 		}
 	}
 
