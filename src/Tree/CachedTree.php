@@ -60,10 +60,12 @@ class CachedTree extends Tree
 		{
 			$url = parent::getPath($node);
 
-			$node->url = $url;
-			$node->language = $this->language->getCurrent();
+			if ($node->url != $url) {
+				$node->url = $url;
+				$node->language = $this->language->getCurrent();
 
-			$this->repository->persist($node);
+				$this->repository->persist($node);
+			}
 		}
 
 		$this->cache->save($this->language->getCurrent()->id, true, [
