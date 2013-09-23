@@ -204,11 +204,13 @@ abstract class Tree extends Object
 			}
 		}
 
-		// Reorder
-		$this->reorder($node);
-		$this->addChild($node, $parent);
+		if ($node->parent != $parent) {
+			// Reorder
+			$this->reorder($node);
+			$this->addChild($node, $parent);
 
-		$this->onMove($node, $parent);
+			$this->onMove($node, $parent);
+		}
 	}
 
 
