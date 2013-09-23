@@ -67,6 +67,8 @@ final class HasOneControl extends BaseControl
 	{
 		parent::setValue($value);
 
+		$this->item = NULL;
+
 		if ($value instanceof IdentifiedEntity) {
 			if (isset($this->items[$value->id])) {
 				$this->item = $this->items[$value->id];
