@@ -99,7 +99,7 @@ final class moviExtension extends CompilerExtension
 	private function initDatabase(ContainerBuilder $builder)
 	{
 		$connection = $builder->addDefinition($this->prefix('connection'))
-			->setClass('LeanMapper\Connection', ['%database%']);
+			->setClass('movi\Model\Connection', ['%database%']);
 
 		$builder->addDefinition($this->prefix('mapper'))
 			->setClass('movi\Model\Mapper');
