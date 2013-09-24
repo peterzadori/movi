@@ -10,10 +10,12 @@ class Fluent extends \LeanMapper\Fluent
 	 */
 	public function count()
 	{
-		$this->removeClause('SELECT');
-		$this->select('COUNT(*)');
+		$fluent = clone $this;
 
-		return $this->fetchSingle();
+		$fluent->removeClause('SELECT');
+		$fluent->select('COUNT(*)');
+
+		return $fluent->fetchSingle();
 	}
 
 }
