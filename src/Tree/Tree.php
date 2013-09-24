@@ -69,9 +69,9 @@ abstract class Tree extends Object
 				$this->nodes[$node->id] = $node;
 
 				if ($node->parent === NULL) {
-					$this->parents[$node->order] = $node;
+					$this->parents[$node->order] = $node->id;
 				} else {
-					$this->children[$node->parent->id][$node->order] = $node;
+					$this->children[$node->parent->id][$node->order] = $node->id;
 				}
 
 				if ($node->root === true) {
@@ -108,7 +108,7 @@ abstract class Tree extends Object
 
 	/**
 	 * @param $id
-	 * @return mixed|TreeEntity
+	 * @return mixed
 	 * @throws NodeNotFound
 	 */
 	public function getNode($id)
@@ -117,7 +117,7 @@ abstract class Tree extends Object
 			if (isset($this->nodes[$id])) {
 				return $this->nodes[$id];
 			} else {
-				throw new NodeNotFound('Node not found.');
+				throw new NodeNotFound();
 			}
 		}
 
@@ -130,7 +130,7 @@ abstract class Tree extends Object
 			$node = $this->findNode($node, $children);
 
 			if ($node === NULL) {
-				throw new NodeNotFound('Node not found.');
+				throw new NodeNotFound();
 			}
 
 			if ($node->path !== $id) {
@@ -170,6 +170,7 @@ abstract class Tree extends Object
 			$child->order = 1;
 		} else {
 			$max = end($children);
+			$max = $this->nodes[$max];
 			$child->order = $max->order + 1;
 		}
 
@@ -244,6 +245,8 @@ abstract class Tree extends Object
 		if (!empty($children)) {
 			foreach ($children as $child)
 			{
+				$child = $this->nodes[$child];
+
 				return $this->deleteNode($child, false);
 			}
 		}
@@ -314,6 +317,8 @@ abstract class Tree extends Object
 	{
 		foreach ($nodes as $node)
 		{
+			$node = $this->nodes[$node];
+
 			if ($node->path == $slug) {
 				return $node;
 			}
@@ -323,23 +328,27 @@ abstract class Tree extends Object
 
 	/**
 	 * @param $node
-	 * @return TreeEntity[]
+	 * @return mixed
 	 */
 	public function getParents($node = NULL)
 	{
-		if ($node === NULL) {
-			return $this->parents;
-		}
-
 		$parents = [];
-		while ($node->parent !== NULL)
-		{
-			$node = $this->nodes[$node->parent->id];
 
-			$parents[] = $node;
+		if ($node === NULL) {
+			array_map(function($id) use (&$parents) {
+				$parents[] = $this->nodes[$id];
+			}, $this->parents);
+		} else {
+			while ($node->parent !== NULL)
+			{
+				$node = $this->nodes[$node->parent->id];
+
+				$parents[] = $node;
+			}
+
+			krsort($parents);
 		}
 
-		krsort($parents);
 		return $parents;
 	}
 
@@ -374,6 +383,8 @@ abstract class Tree extends Object
 		if (!empty($children)) {
 			foreach ($children as $child)
 			{
+				$child = $this->nodes[$child];
+
 				$tree[$child->id] = $this->getNode($child->id);
 
 				$this->getChildrenRecursively($child, $tree);
@@ -395,6 +406,8 @@ abstract class Tree extends Object
 
 		foreach ($nodes as $sibling)
 		{
+			$sibling = $this->nodes[$sibling];
+
 			if ($sibling->id === $node->id) {
 				continue;
 			}
@@ -441,6 +454,8 @@ abstract class Tree extends Object
 		if (!empty($nodes)) {
 			foreach ($nodes as $child)
 			{
+				$child = $this->nodes[$child];
+
 				if (($exclude !== NULL && $exclude === $child->id) || $child->hidden === true) {
 					continue;
 				}
@@ -473,6 +488,8 @@ abstract class Tree extends Object
 		if (!empty($children)) {
 			foreach ($children as $child)
 			{
+				$child = $this->nodes[$child];
+
 				if ($child->hidden === true) {
 					continue;
 				}
@@ -507,6 +524,8 @@ abstract class Tree extends Object
 
 		foreach ($nodes as $node)
 		{
+			$node = $this->nodes[$node];
+
 			$callback($node);
 
 			$children = $this->getChildren($node);
