@@ -2,7 +2,7 @@
 
 namespace movi\Config\Extensions;
 
-use LeanMapper\Connection;
+use movi\Model\Connection;
 use Nette\Config\Compiler;
 use Nette\DI\ContainerBuilder;
 use Nette\Utils\PhpGenerator\ClassType;

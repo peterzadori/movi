@@ -3,16 +3,14 @@
 namespace movi\Packages\Installers;
 
 use Doctrine\DBAL\Platforms\MySqlPlatform;
-use Doctrine\DBAL\Schema\Schema;
-use LeanMapper\Connection;
+use movi\Model\Connection;
 use movi\Packages\IInstaller;
 use movi\Packages\Package;
-use movi\Packages\SchemaPackage;
 
 final class SchemaInstaller implements IInstaller
 {
 
-	/** @var \LeanMapper\Connection */
+	/** @var \movi\Model\Connection */
 	private $connection;
 
 	/** @var \Doctrine\DBAL\Platforms\MySqlPlatform */

@@ -3,7 +3,6 @@
 namespace movi\Model;
 
 use Kdyby\Events\EventManager;
-use LeanMapper\Connection;
 use LeanMapper\Events;
 use LeanMapper\Fluent;
 use LeanMapper\IMapper;
