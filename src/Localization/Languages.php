@@ -2,6 +2,7 @@
 
 namespace movi\Localization;
 
+use movi\EntityNotFound;
 use movi\InvalidStateException;
 use Nette\Object;
 use movi\Model\Entities\Language as LanguageEntity;
@@ -9,6 +10,8 @@ use movi\Model\Repositories\LanguagesRepository;
 
 final class Languages extends Object
 {
+
+	private $languagesRepository;
 
 	/** @var Language[] */
 	private $languages;
@@ -24,6 +27,7 @@ final class Languages extends Object
 
 	public function __construct(Language $language, LanguagesRepository $languagesRepository)
 	{
+		$this->languagesRepository = $languagesRepository;
 		$this->languages = $languagesRepository->findActive();
 
 		if (count($this->languages) == 0) {
@@ -56,8 +60,16 @@ final class Languages extends Object
 	 * @param LanguageEntity $language
 	 * @return $this
 	 */
-	public function setCurrent(LanguageEntity $language)
+	public function setCurrent($language)
 	{
+		if (!($language instanceof LanguageEntity)) {
+			try {
+				$language = $this->languagesRepository->findBy(['[code] = %s' => $language]);
+			} catch (EntityNotFound $e) {
+				$language = $this->default;
+			}
+		}
+
 		$this->current->setLanguage($language);
 
 		return $this;
