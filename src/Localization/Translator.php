@@ -19,7 +19,7 @@ final class Translator implements ITranslator
 	private $language;
 
 	/** @var array */
-	private $translations;
+	private $translations = [];
 
 	/** @var \Nette\Caching\Cache */
 	private $cache;
@@ -91,6 +91,8 @@ final class Translator implements ITranslator
 	{
 		if ($translations !== NULL) {
 			$translations = $this->flatten($translations);
+		} else {
+			$translations = [];
 		}
 	}
 
