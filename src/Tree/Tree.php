@@ -159,7 +159,7 @@ abstract class Tree extends Object
 		}
 
 		if ($parent === NULL) {
-			$children = $this->parents;
+			$children = $this->getParents();
 		} else {
 			$children = $this->getChildren($parent);
 		}
@@ -170,7 +170,6 @@ abstract class Tree extends Object
 			$child->order = 1;
 		} else {
 			$max = end($children);
-			$max = $this->nodes[$max];
 			$child->order = $max->order + 1;
 		}
 
