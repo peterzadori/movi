@@ -16,7 +16,7 @@ class CachedTree extends Tree
 	/** @var \Nette\Caching\Cache */
 	private $cache;
 
-	private $urls;
+	private $urls = [];
 
 
 	public function __construct(Language $language, CacheProvider $cacheProvider)

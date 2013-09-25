@@ -245,8 +245,6 @@ abstract class Tree extends Object
 		if (!empty($children)) {
 			foreach ($children as $child)
 			{
-				$child = $this->nodes[$child];
-
 				return $this->deleteNode($child, false);
 			}
 		}
