@@ -184,4 +184,17 @@ abstract class Repository extends \LeanMapper\Repository
 		ObjectMixin::call($this, $method, $args);
 	}
 
+
+	/**
+	 * @param $data
+	 * @return mixed
+	 */
+	public function createUnserializedEntity($data)
+	{
+		$row = json_decode($data);
+		$row = new \DibiRow($row);
+
+		return $this->createEntity($row);
+	}
+
 }

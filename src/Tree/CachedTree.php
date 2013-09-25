@@ -16,6 +16,8 @@ class CachedTree extends Tree
 	/** @var \Nette\Caching\Cache */
 	private $cache;
 
+	private $urls;
+
 
 	public function __construct(Language $language, CacheProvider $cacheProvider)
 	{
@@ -54,6 +56,55 @@ class CachedTree extends Tree
 	}
 
 
+	public function build(array $nodes = NULL)
+	{
+		if (!$this->built) {
+			$key = sprintf('nodes-%d', $this->language->getCurrent()->id);
+
+			if ($this->cache->load($key) === NULL) {
+				$rows = $this->repository->findAll();
+				$nodes = [];
+				$parents = [];
+				$children = [];
+
+				foreach ($rows as $node)
+				{
+					$this->onFetch($node);
+
+					$nodes[$node->id] = json_encode($node);
+
+					if ($node->parent === NULL) {
+						$parents[$node->order] = $node->id;
+					} else {
+						$children[$node->parent->id][$node->order] = $node->id;
+					}
+				}
+
+				$this->cache->save($key, [$nodes, $parents, $children], [
+					Cache::TAGS => [get_called_class()]
+				]);
+			}
+
+			list($nodes, $this->parents, $this->children) = $this->cache->load($key);
+
+			foreach($nodes as $node)
+			{
+				$node = $this->repository->createUnserializedEntity($node);
+				$this->nodes[$node->id] = $node;
+				$this->urls[$node->url] = $node->id;
+
+				if ($node->root) {
+					$this->root = $node;
+				}
+			}
+
+			$this->onBuild();
+
+			$this->built = true;
+		}
+	}
+
+
 	private function buildUrls()
 	{
 		foreach ($this->nodes as $node)
@@ -76,15 +127,12 @@ class CachedTree extends Tree
 
 	/**
 	 * @param $url
-	 * @return mixed|TreeEntity
+	 * @return mixed
 	 */
 	public function getNode($url)
 	{
-		foreach ($this->nodes as $node)
-		{
-			if ($node->url === $url) {
-				return $node;
-			}
+		if (array_key_exists($url, $this->urls)) {
+			$url = $this->urls[$url];
 		}
 
 		return parent::getNode($url);
