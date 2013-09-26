@@ -77,7 +77,7 @@ final class moviExtension extends CompilerExtension
 
 		$initialize->addBody($container->formatPhp(
 			'Nette\Diagnostics\Debugger::$bar->addPanel(?);',
-			Compiler::filterArguments([new \Nette\DI\Statement('movi\Diagnostics\Stopwatch')])
+			Compiler::filterArguments([new \Nette\DI\Statement('movi\Diagnostics\Stopwatch\Stopwatch')])
 		));
 	}
 

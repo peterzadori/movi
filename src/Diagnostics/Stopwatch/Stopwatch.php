@@ -1,6 +1,6 @@
 <?php
 
-namespace movi\Diagnostics;
+namespace movi\Diagnostics\Stopwatch;
 
 use Nette\Diagnostics\Debugger;
 use Nette\Diagnostics\IBarPanel;
