@@ -26,6 +26,8 @@
 	},
 	"autoload": {
 		"files": ["src/loader.php"],
-		"classmap": ["src/"]
+		"psr-0": {
+			"movi\\": "src/"
+		}
 	}
 }
