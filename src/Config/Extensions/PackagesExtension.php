@@ -79,8 +79,6 @@ final class PackagesExtension extends CompilerExtension
 
 				$this->processExtensions($package->extensions);
 
-				$this->processConfigs($package, $builder);
-
 				$manager->addSetup('addPackage', [$package]);
 			}
 		}
@@ -95,30 +93,6 @@ final class PackagesExtension extends CompilerExtension
 		foreach ($extensions as $name => $extension)
 		{
 			$this->compiler->addExtension($name, new $extension);
-		}
-	}
-
-
-	/**
-	 * @param Package $package
-	 * @param ContainerBuilder $builder
-	 */
-	private function processConfigs(Package $package, ContainerBuilder $builder)
-	{
-		foreach ($package->config as $file)
-		{
-			$file = ltrim($file, '/');
-			$file = $package->dir . '/' . $file;
-
-			$config = $this->loadFromFile($file);
-
-			// Parameters
-			if (isset($config['parameters'])) {
-				$builder->parameters = Helpers::merge($builder->parameters, $config['parameters']);
-			}
-
-			// Parse configuration file
-			$this->compiler->parseServices($builder, $config);
 		}
 	}
 

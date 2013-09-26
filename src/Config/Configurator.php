@@ -82,6 +82,16 @@ final class Configurator extends Nette\Config\Configurator
 		$collection = new InstalledPackages($this->parameters['packagesDir']);
 		$packages = $collection->getPackages();
 
+		foreach ($packages as $package)
+		{
+			if (!empty($package['config'])) {
+				foreach($package['config'] as $config)
+				{
+					$this->addConfig($package['dir'] . $config, $this::NONE);
+				}
+			}
+		}
+
 		$this->parameters['packages'] = $packages;
 	}
 
