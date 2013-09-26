@@ -128,7 +128,10 @@ final class moviExtension extends CompilerExtension
 
 		foreach(array_keys($builder->findByTag('repository')) as $repository)
 		{
-			$mapping->addSetup('registerRepository', array('@' . $repository));
+			$reflection = \Nette\Reflection\ClassType::from($builder->getDefinition($repository)->class);
+			$class = $reflection->newInstanceWithoutConstructor();
+
+			$mapping->addSetup('registerEntities', array($class->getEntities()));
 		}
 	}
 

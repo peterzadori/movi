@@ -6,17 +6,17 @@ class EntityMapping
 {
 
 	/** @var array */
-	private static $entities;
+	private $entities;
 
 
 	/**
-	 * @param Repository $repository
+	 * @param array $entities
 	 */
-	public static function registerRepository(Repository $repository)
+	public function registerEntities(array $entities)
 	{
-		foreach ($repository->getEntities() as $table => $entity)
+		foreach ($entities as $table => $entity)
 		{
-			self::$entities[$table] = $entity;
+			$this->entities[$table] = $entity;
 		}
 	}
 
@@ -25,12 +25,12 @@ class EntityMapping
 	 * @param $table
 	 * @return bool
 	 */
-	public static function getEntity($table)
+	public function getEntity($table)
 	{
-		if (!array_key_exists($table, self::$entities)) {
+		if (!array_key_exists($table, $this->entities)) {
 			return false;
 		} else {
-			return self::$entities[$table];
+			return $this->entities[$table];
 		}
 	}
 

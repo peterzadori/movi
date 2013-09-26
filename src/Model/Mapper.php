@@ -13,6 +13,15 @@ class Mapper extends DefaultMapper
 	/** @var string */
 	protected $defaultEntityNamespace = '\movi\Model\Entities';
 
+	/** @var EntityMapping */
+	private $entityMapping;
+
+
+	public function __construct(EntityMapping $entityMapping)
+	{
+		$this->entityMapping = $entityMapping;
+	}
+
 
 	/**
 	 * @param string $table
@@ -21,7 +30,7 @@ class Mapper extends DefaultMapper
 	 */
 	public function getEntityClass($table, Row $row = NULL)
 	{
-		if ($entity = EntityMapping::getEntity($table)) {
+		if ($entity = $this->entityMapping->getEntity($table)) {
 			return $entity;
 		} else {
 			return $this->formatEntityClassName($table);
