@@ -25,10 +25,10 @@ final class Languages extends Object
 	public $onSet;
 
 
-	public function __construct(Language $language, LanguagesRepository $languagesRepository)
+	public function __construct(Language $language, ILanguagesRepository $languagesRepository)
 	{
 		$this->languagesRepository = $languagesRepository;
-		$this->languages = $languagesRepository->findActive();
+		$this->languages = $languagesRepository->getActive();
 
 		if (count($this->languages) == 0) {
 			throw new InvalidStateException('No languages found.');
@@ -64,7 +64,7 @@ final class Languages extends Object
 	{
 		if (!($language instanceof LanguageEntity)) {
 			try {
-				$language = $this->languagesRepository->findBy(['[code] = %s' => $language]);
+				$language = $this->languagesRepository->findByCode($language);
 			} catch (EntityNotFound $e) {
 				$language = $this->default;
 			}

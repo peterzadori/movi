@@ -138,11 +138,6 @@ final class moviExtension extends CompilerExtension
 
 	private function initLocalization(ContainerBuilder $builder)
 	{
-		$builder->addDefinition($this->prefix('languagesRepository'))
-			->setClass('movi\Model\Repositories\LanguagesRepository')
-			->addSetup('setLocalDir', ['%localDir%'])
-			->addTag('repository');
-
 		$builder->addDefinition($this->prefix('language'))
 			->setClass('movi\Localization\Language');
 
