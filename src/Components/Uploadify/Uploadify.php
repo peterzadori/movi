@@ -55,7 +55,7 @@ final class Uploadify extends Control
 		$file = $this->httpRequest->getFile('Filedata');
 
 		if ($file->isOk()) {
-			$this->onUpload($file);
+			$this->onUpload($file, $this->httpRequest->getPost());
 		} else {
 			$this->onError($file->getError());
 		}
