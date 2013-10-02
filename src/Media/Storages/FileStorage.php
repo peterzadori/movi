@@ -55,6 +55,11 @@ class FileStorage extends Object implements IMediaStorage
 	public function setStorageDir($dir)
 	{
 		$this->absolutePath = $dir . '/' . $this->dir;
+
+		if (!file_exists($this->absolutePath)) {
+			umask(0000);
+			@mkdir($this->absolutePath, 0777);
+		}
 	}
 
 
