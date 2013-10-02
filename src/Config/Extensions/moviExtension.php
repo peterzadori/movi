@@ -42,6 +42,9 @@ final class moviExtension extends CompilerExtension
 		$builder->addDefinition($this->prefix('cacheProvider'))
 			->setClass('movi\Caching\CacheProvider');
 
+		$builder->addDefinition($this->prefix('media'))
+			->setClass('movi\Media\Media');
+
 		$this->initDatabase($builder);
 
 		$this->initLocalization($builder);
@@ -158,7 +161,8 @@ final class moviExtension extends CompilerExtension
 		$builder->addDefinition($this->prefix('helpers'))
 			->setClass('movi\Templating\Helpers');
 
-		$mediaMacros = $builder->addDefinition($this->prefix('mediaMacros'));
+		$mediaMacros = $builder->addDefinition($this->prefix('mediaMacros'))
+			->class('movi\Templating\Macros\MediaMacros');
 
 		$latte = $builder->getDefinition('nette.latte');
 		$latte->addSetup('movi\Templating\Macros\moviMacros::install(?->compiler)', ['@self']);
