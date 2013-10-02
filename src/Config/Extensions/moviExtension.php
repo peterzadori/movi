@@ -158,13 +158,11 @@ final class moviExtension extends CompilerExtension
 		$builder->addDefinition($this->prefix('helpers'))
 			->setClass('movi\Templating\Helpers');
 
-		$builder->addDefinition($this->prefix('thumbnailHelper'))
-			->setClass('movi\Templating\Helpers\ThumbnailHelper', ['%wwwDir%'])
-			->addTag('helper')
-			->addTag('name', 'thumbnail');
+		$mediaMacros = $builder->addDefinition($this->prefix('mediaMacros'));
 
 		$latte = $builder->getDefinition('nette.latte');
 		$latte->addSetup('movi\Templating\Macros\moviMacros::install(?->compiler)', ['@self']);
+		$latte->addSetup('?->install(?->compiler)', [$mediaMacros, '@self']);
 
 		foreach ($config['macros'] as $macro) {
 			if (strpos($macro, '::') === FALSE && class_exists($macro)) {
