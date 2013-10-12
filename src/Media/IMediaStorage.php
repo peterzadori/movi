@@ -15,4 +15,6 @@ interface IMediaStorage
 
 	public function setStorageDir($dir);
 
+	public function setNamespace($namespace);
+
 }

@@ -7,4 +7,6 @@ interface IFile
 
 	public function getFilename();
 
+	public function getAbsolutePath();
+
 }

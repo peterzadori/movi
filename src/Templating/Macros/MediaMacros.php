@@ -2,140 +2,35 @@
 
 namespace movi\Templating\Macros;
 
-use movi\Media\Media;
-use Nette\ArrayHash;
 use Nette\Image;
 use Nette\Latte\Compiler;
-use Nette\Latte\Engine;
 use Nette\Latte\MacroNode;
 use Nette\Latte\Macros\MacroSet;
-use Nette\Utils\Html;
+use Nette\Latte\PhpWriter;
 
-class MediaMacros
+class MediaMacros extends MacroSet
 {
 
-	/** @var \movi\Media\Media */
-	private $media;
-
-	private $defaults = [
-		'storage' => NULL,
-		'file' => NULL,
-		'width' => NULL,
-		'height' => NULL,
-		'flag' => 'EXACT'
-	];
-
-
-	public function __construct(Media $media)
+	public static function install(Compiler $compiler)
 	{
-		$this->media = $media;
+		$macroset = new static($compiler);
+		$macroset->addMacro('image', [$macroset, 'macroImage']);
+		$macroset->addMacro('file', [$macroset, 'macroFile']);
 	}
 
 
-	public function install(Engine $engine)
+	public static function macroImage(MacroNode $node, PhpWriter $writer)
 	{
-		$compiler = $engine->getCompiler();
+		$str = '$thumbFile = $presenter->context->thumbnailer->createThumbnail(%node.array);'
+			. 'echo "<img src=\"$thumbFile\">"';
 
-		$macroset = new MacroSet($compiler);
-		$macroset->addMacro('thumb', [$this, 'macroThumbnail']);
-		$macroset->addMacro('file', [$this, 'macroFile']);
+		return $writer->write($str);
 	}
 
 
-	public function macroThumbnail(MacroNode $node)
+	public static function macroFile(MacroNode $node, PhpWriter $writer)
 	{
-		$args = $this->parseToken($node->tokenizer->fetchAll());
-
-		$storage = $this->media->getStorage($args->storage);
-		$image = $storage->load($args->file);
-		$width = $args->width;
-		$height = $args->height;
-
-		if ($image !== NULL) {
-			if ($width && $width != $image->width) {
-				$name = $this->createThumbnailName($image, $width, $height);
-				$thumb = $storage->absolutePath . '/' . $name;
-				$src = NULL;
-
-				if (!file_exists($thumb)) {
-					$image = Image::fromFile($image->absolutePath);
-
-					if (empty($height)) {
-						$height = $width;
-					}
-
-					$image->resize($width, $height, constant('Nette\Image::' . strtoupper($args->flag)));
-					$image->save($thumb);
-				}
-
-				$image = $storage->load($name);
-			}
-
-			$src = $storage->getBaseUrl() . '/' . $image->filename;
-
-			$el = Html::el('img');
-			$el->src = $src;
-
-			return "echo '$el';";
-		}
-	}
-
-
-	public function macroFile(MacroNode $node)
-	{
-		$args = $this->parseToken($node->tokenizer->fetchAll());
-
-		$storage = $this->media->getStorage($args->storage);
-		$file = $storage->load($args->file);
-
-		if ($file !== NULL) {
-			$link = $storage->getBaseUrl() . '/' . $file->filename;
-
-			return "echo '$link';";
-		}
-	}
-
-
-	public function createThumbnailName($image, $width, $height = NULL)
-	{
-		$name = [];
-
-		$image = $image->filename;
-		$image = explode('.', $image);
-		$extension = array_pop($image);
-
-		$image = implode('.', $image);
-
-		$name[] = $image;
-		$name[] = $width;
-
-		if (!empty($height) && $height > 0) {
-			$name[] = $height;
-		}
-
-		return sprintf('%s.%s', implode('-', $name), $extension);
-	}
-
-
-	/**
-	 * @param $token
-	 * @return ArrayHash
-	 */
-	private function parseToken($token)
-	{
-		$token = str_replace(' ', '', $token);
-		$args = [];
-
-		foreach (explode(',', $token) as $part)
-		{
-			list($key, $value) = explode('=>', $part);
-			$args[$key] = $value;
-		}
-
-		$args = array_merge($this->defaults, $args);
-		$args = ArrayHash::from($args);
-
-		return $args;
+		return $writer->write('echo $presenter->context->linker->createLink(%node.array);');
 	}
 
 }

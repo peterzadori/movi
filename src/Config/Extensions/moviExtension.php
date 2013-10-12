@@ -43,7 +43,13 @@ final class moviExtension extends CompilerExtension
 			->setClass('movi\Caching\CacheProvider');
 
 		$builder->addDefinition($this->prefix('media'))
-			->setClass('movi\Media\Media');
+			->setClass('movi\Media\Media', ['storage', '%wwwDir%']);
+
+		$builder->addDefinition('thumbnailer')
+			->setClass('movi\Media\Utils\Thumbnailer');
+
+		$builder->addDefinition('linker')
+			->setClass('movi\Media\Utils\Linker');
 
 		$this->initDatabase($builder);
 
@@ -68,6 +74,8 @@ final class moviExtension extends CompilerExtension
 		$this->registerWidgets($builder);
 
 		$this->registerHelpers($builder);
+
+		$this->registerMediaStorages($builder);
 
 		$this->registerRoutes($builder);
 	}
@@ -161,12 +169,9 @@ final class moviExtension extends CompilerExtension
 		$builder->addDefinition($this->prefix('helpers'))
 			->setClass('movi\Templating\Helpers');
 
-		$mediaMacros = $builder->addDefinition($this->prefix('mediaMacros'))
-			->class('movi\Templating\Macros\MediaMacros');
-
 		$latte = $builder->getDefinition('nette.latte');
 		$latte->addSetup('movi\Templating\Macros\moviMacros::install(?->compiler)', ['@self']);
-		$latte->addSetup('?->install(?->compiler)', [$mediaMacros, '@self']);
+		$latte->addSetup('movi\Templating\Macros\MediaMacros::install(?->compiler)', ['@self']);
 
 		foreach ($config['macros'] as $macro) {
 			if (strpos($macro, '::') === FALSE && class_exists($macro)) {
@@ -190,6 +195,20 @@ final class moviExtension extends CompilerExtension
 			$name = $definition->tags['name'];
 
 			$helpers->addSetup('registerHelper', [$name, '@' . $helper]);
+		}
+	}
+
+
+	private function registerMediaStorages(ContainerBuilder $builder)
+	{
+		$media = $builder->getDefinition($this->prefix('media'));
+
+		foreach(array_keys($builder->findByTag('media.storage')) as $storage)
+		{
+			$definition = $builder->getDefinition($storage);
+			$name = $definition->tags['name'];
+
+			$media->addSetup('addStorage', [$name, '@' . $storage]);
 		}
 	}
 
