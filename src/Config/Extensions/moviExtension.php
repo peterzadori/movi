@@ -157,7 +157,7 @@ final class moviExtension extends CompilerExtension
 
 		$builder->addDefinition($this->prefix('translator'))
 			->setClass('movi\Localization\Translator')
-			->setArguments(['%localDir%']);
+			->setArguments(['%localeDir%']);
 	}
 
 
