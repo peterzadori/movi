@@ -13,7 +13,7 @@ final class Translator implements ITranslator
 {
 
 	/** @var string */
-	private $localDir;
+	private $localeDir;
 
 	/** @var \movi\Localization\Language */
 	private $language;
@@ -28,9 +28,9 @@ final class Translator implements ITranslator
 	private $loaded = false;
 
 
-	public function __construct($localDir, Language $language, CacheProvider $cacheProvider)
+	public function __construct($localeDir, Language $language, CacheProvider $cacheProvider)
 	{
-		$this->localDir = $localDir;
+		$this->localeDir = $localeDir;
 		$this->language = $language;
 
 		$this->cache = $cacheProvider->create('movi.translations');
@@ -42,7 +42,7 @@ final class Translator implements ITranslator
 		$language = $this->language->getLanguage();
 
 		if ($this->cache->load($language->id) === NULL) {
-			$file = sprintf('%s/%s.neon', $this->localDir, $language->code);
+			$file = sprintf('%s/%s.neon', $this->localeDir, $language->code);
 			$translations = [];
 
 			if (file_exists($file) && is_readable($file)) {
