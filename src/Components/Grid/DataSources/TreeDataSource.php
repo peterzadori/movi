@@ -15,6 +15,7 @@ class TreeDataSource implements IDataSource
 	public function __construct(Tree $tree)
 	{
 		$this->tree = $tree;
+
 		$this->tree->build();
 	}
 
@@ -45,12 +46,6 @@ class TreeDataSource implements IDataSource
 	public function limit($limit, $offset)
 	{
 
-	}
-
-
-	public function getClone()
-	{
-		return new $this($this->tree);
 	}
 
 }

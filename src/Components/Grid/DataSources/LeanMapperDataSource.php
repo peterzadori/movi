@@ -14,6 +14,10 @@ class LeanMapperDataSource implements IDataSource
 	/** @var \DibiFluent */
 	public $statement;
 
+	private $offset;
+
+	private $limit;
+
 
 	public function __construct(Repository $repository)
 	{
@@ -24,7 +28,10 @@ class LeanMapperDataSource implements IDataSource
 
 	public function fetch()
 	{
-		return $this->repository->fetchStatement($this->statement);
+		$statement = clone $this->statement;
+		$statement->limit([$this->offset, $this->limit]);
+
+		return $this->repository->fetchStatement($statement);
 	}
 
 
@@ -57,13 +64,8 @@ class LeanMapperDataSource implements IDataSource
 
 	public function limit($limit, $offset)
 	{
-		$this->statement->limit([$offset, $limit]);
-	}
-
-
-	public function getClone()
-	{
-		return new $this($this->repository);
+		$this->limit = $limit;
+		$this->offset = $offset;
 	}
 
 }

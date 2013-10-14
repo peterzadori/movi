@@ -15,9 +15,4 @@ interface IDataSource
 
 	public function limit($limit, $offset);
 
-	/**
-	 * @return IDataSource
-	 */
-	public function getClone();
-
 }

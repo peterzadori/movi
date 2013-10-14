@@ -197,10 +197,12 @@ class Grid extends Control
 	{
 		$this->rows = [];
 
-		$dataSource = $this->dataSource->getClone();
+		$dataSource = $this->dataSource;
 
 		$this->filter($dataSource);
 		$this->sort($dataSource);
+
+		$this->onFetch($dataSource);
 
 		/** @var \Nette\Utils\Paginator $paginator */
 		$paginator = $this['paginator']->getPaginator();
@@ -208,8 +210,6 @@ class Grid extends Control
 		$paginator->itemCount = $dataSource->count();
 
 		$dataSource->limit($this->itemsPerPage, $paginator->offset);
-
-		$this->onFetch($dataSource);
 
 		$rows = $dataSource->fetch();
 
