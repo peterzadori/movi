@@ -106,8 +106,7 @@ final class Configurator extends Nette\Config\Configurator
 			'storageDir' => $this->parameters['wwwDir'] . '/storage',
 			'templatesDir' => $this->parameters['appDir'] . '/templates',
 			'logDir' => $this->parameters['appDir'] . '/log',
-			'localeDir' => $this->parameters['appDir'] . '/locale',
-			'localDir' => $this->parameters['localeDir'],
+			'localeDir' => $this->parameters['appDir'] . '/locale'
 		));
 
 		$this->setTempDirectory($this->parameters['tempDir']);
