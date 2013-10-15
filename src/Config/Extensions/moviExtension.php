@@ -2,7 +2,6 @@
 
 namespace movi\Config\Extensions;
 
-use movi\Model\Connection;
 use Nette\Config\Compiler;
 use Nette\DI\ContainerBuilder;
 use Nette\Utils\PhpGenerator\ClassType;
@@ -14,9 +13,6 @@ final class moviExtension extends CompilerExtension
 
 	/** @var array */
 	private $defaults = [
-		'language' => [
-			'detect' => false
-		],
 		'project' => NULL,
 		'password' => [
 			'salt' => NULL,
@@ -69,8 +65,6 @@ final class moviExtension extends CompilerExtension
 	{
 		$builder = $this->getContainerBuilder();
 
-		$this->registerRepositories($builder);
-
 		$this->registerWidgets($builder);
 
 		$this->registerHelpers($builder);
@@ -109,41 +103,7 @@ final class moviExtension extends CompilerExtension
 
 	private function initDatabase(ContainerBuilder $builder)
 	{
-		$connection = $builder->addDefinition($this->prefix('connection'))
-			->setClass('movi\Model\Connection', ['%database%']);
 
-		$builder->addDefinition($this->prefix('mapper'))
-			->setClass('movi\Model\Mapper');
-
-		$builder->addDefinition($this->prefix('entityMapping'))
-			->setClass('movi\Model\EntityMapping')
-			->addTag('run');
-
-		$translateFilter = $builder->addDefinition($this->prefix('translateFilter'))
-			->setClass('movi\Model\Filters\TranslateFilter');
-
-		$orderFilter = $builder->addDefinition($this->prefix('orderFilter'))
-			->setClass('movi\Model\Filters\OrderFilter');
-
-		$connection->addSetup('registerFilter', [
-			'translate', [$translateFilter, 'translate'], Connection::WIRE_PROPERTY
-		]);
-
-		$connection->addSetup('registerFilter', ['order', [$orderFilter, 'modify']]);
-	}
-
-
-	private function registerRepositories(ContainerBuilder $builder)
-	{
-		$mapping = $builder->getDefinition($this->prefix('entityMapping'));
-
-		foreach(array_keys($builder->findByTag('repository')) as $repository)
-		{
-			$reflection = \Nette\Reflection\ClassType::from($builder->getDefinition($repository)->class);
-			$class = $reflection->newInstanceWithoutConstructor();
-
-			$mapping->addSetup('registerEntities', array($class->getEntities()));
-		}
 	}
 
 

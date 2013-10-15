@@ -9,7 +9,7 @@ final class ExtensionsExtension extends CompilerExtension
 
 	public function loadConfiguration()
 	{
-		$config = $this->getConfig(); // Extension list
+		$config = $this->getConfig();
 
 		foreach ($config as $name => $extension)
 		{

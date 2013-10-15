@@ -48,6 +48,11 @@ final class Configurator extends Nette\Config\Configurator
 		// Register extensions
 		$compiler->addExtension('movi', new movi\Config\Extensions\moviExtension);
 		$compiler->addExtension('packages', new movi\Config\Extensions\PackagesExtension());
+
+		$compiler->addExtension('database', new movi\Config\Extensions\DatabaseExtension());
+		$compiler->addExtension('repositories', new movi\Config\Extensions\RepositoriesExtension());
+		$compiler->addExtension('filters', new movi\Config\Extensions\FiltersExtension());
+
 		$compiler->addExtension('extensions', new movi\Config\Extensions\ExtensionsExtension);
 		$compiler->addExtension('forms', new movi\Forms\DI\FormsExtension());
 		$compiler->addExtension('events', new Kdyby\Events\DI\EventsExtension());
