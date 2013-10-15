@@ -19,8 +19,6 @@ class InstalledPackages implements ICollection
 	public function __construct($packagesDir)
 	{
 		$this->packagesDir = $packagesDir;
-
-		$this->findPackages();
 	}
 
 
@@ -29,6 +27,8 @@ class InstalledPackages implements ICollection
 	 */
 	public function getPackages()
 	{
+		$this->findPackages();
+
 		return $this->packages;
 	}
 

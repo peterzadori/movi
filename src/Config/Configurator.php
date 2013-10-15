@@ -65,7 +65,11 @@ final class Configurator extends Nette\Config\Configurator
 	{
 		$loader = parent::createRobotLoader();
 		$loader->addDirectory($this->parameters['packagesDir']);
-		$loader->addDirectory($this->parameters['libsDir']);
+
+		if (file_exists($this->parameters['libsDir'])) {
+			$loader->addDirectory($this->parameters['libsDir']);
+		}
+
 		$loader->register();
 
 		$this->robotLoader = $loader;

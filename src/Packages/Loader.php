@@ -2,6 +2,7 @@
 
 namespace movi\Packages;
 
+use Nette\Utils\Arrays;
 use Nette\Utils\Json;
 use movi\FileNotFoundException;
 use movi\InvalidArgumentException;
@@ -9,57 +10,57 @@ use movi\InvalidArgumentException;
 final class Loader
 {
 
-	const JSON_FILE = 'package.json';
+	const PACKAGE_FILE = 'package.json';
 
 
-	/** @var \SplFileInfo */
-	private $package;
+	private $defaults = [
+		'config' => [],
+		'resources' => [],
+		'extensions' => [],
+		'schemas' => []
+	];
 
 
 	public function getPackage(\SplFileInfo $package)
 	{
-		$this->package = $package;
-
-		return $this->createPackage();
+		return $this->createPackage($package);
 	}
 
 
 	/**
-	 * @return array
+	 * @param \SplFileInfo $package
+	 * @return mixed
 	 * @throws \movi\InvalidArgumentException
 	 */
-	private function createPackage()
+	private function createPackage(\SplFileInfo $package)
 	{
-		$data = $this->parseJson();
+		$data = $this->getData($package);
 
 		if (!isset($data['name'])) {
 			throw new InvalidArgumentException("Unknown package name.");
 		}
-
-		// Parse JSON data
-		$data['config'] = (isset($data['config'])) ? $data['config'] : [];
-		$data['resources'] = (isset($data['resources'])) ? $data['resources'] : [];
-		$data['dir'] = $this->package->getPathname();
-		$data['extensions'] = (isset($data['extensions'])) ? $data['extensions'] : [];
-		$data['schemas'] = (isset($data['schemas'])) ? $data['schemas'] : [];
 
 		return $data;
 	}
 
 
 	/**
-	 * @return mixed
+	 * @param \SplFileInfo $package
+	 * @return array
 	 * @throws \movi\FileNotFoundException
 	 */
-	private function parseJson()
+	private function getData(\SplFileInfo $package)
 	{
-		$file = $this->package->getPathname() . '/'. self::JSON_FILE;
+		$file = $package->getPathname() . '/'. self::PACKAGE_FILE;
 
 		if (!file_exists($file) || !is_readable($file)) {
-			throw new FileNotFoundException("JSON file for package '" . $this->package->getFilename() . "' was not found or is not readable.");
+			throw new FileNotFoundException("JSON file for package '" . $package->getFilename() . "' was not found or is not readable.");
 		}
 
-		return Json::decode(file_get_contents($file), Json::FORCE_ARRAY);
+		$data = Json::decode(file_get_contents($file), Json::FORCE_ARRAY);
+		$data['dir'] = $package->getPathname();
+
+		return Arrays::mergeTree($data, $this->defaults);
 	}
 
 }
