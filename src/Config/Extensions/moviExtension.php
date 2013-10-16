@@ -2,6 +2,8 @@
 
 namespace movi\Config\Extensions;
 
+use movi\InvalidArgumentException;
+use movi\InvalidStateException;
 use Nette\Config\Compiler;
 use Nette\DI\ContainerBuilder;
 use Nette\Utils\PhpGenerator\ClassType;
@@ -10,6 +12,12 @@ use movi\Config\CompilerExtension;
 
 final class moviExtension extends CompilerExtension
 {
+
+	const ROUTE_TAG = 'route',
+		HELPER_TAG = 'helper',
+		MEDIA_STORAGE_TAG = 'media.storage',
+		WIDGET_TAG = 'widget';
+
 
 	/** @var array */
 	private $defaults = [
@@ -27,27 +35,18 @@ final class moviExtension extends CompilerExtension
 		$config = $this->getConfig($this->defaults);
 		$builder = $this->getContainerBuilder();
 
-		if (isset($config['project'])) {
-			$builder->getDefinition('session')
-				->addSetup('setName', [$config['project']]);
+		if (empty($config['project'])) {
+			throw new InvalidStateException("Please specify the project's name");
 		}
+
+		$builder->getDefinition('session')
+			->addSetup('setName', [$config['project']]);
 
 		$builder->getDefinition('nette.presenterFactory')
 			->setClass('movi\Application\PresenterFactory', [$builder->parameters['appDir']]);
 
 		$builder->addDefinition($this->prefix('cacheProvider'))
 			->setClass('movi\Caching\CacheProvider');
-
-		$builder->addDefinition($this->prefix('media'))
-			->setClass('movi\Media\Media', ['storage', '%wwwDir%']);
-
-		$builder->addDefinition('thumbnailer')
-			->setClass('movi\Media\Utils\Thumbnailer');
-
-		$builder->addDefinition('linker')
-			->setClass('movi\Media\Utils\Linker');
-
-		$this->initDatabase($builder);
 
 		$this->initLocalization($builder);
 
@@ -58,6 +57,8 @@ final class moviExtension extends CompilerExtension
 		$this->initWidgets($builder);
 
 		$this->initAssets($builder);
+
+		$this->initMedia($builder);
 	}
 
 
@@ -91,19 +92,13 @@ final class moviExtension extends CompilerExtension
 	{
 		$router = $builder->getDefinition('router');
 
-		foreach($this->getSortedServices('route') as $route)
+		foreach($this->getSortedServices(self::ROUTE_TAG) as $route)
 		{
 			$definition = $builder->getDefinition($route);
 			$definition->setAutowired(false);
 
 			$router->addSetup('$service[] = ?', $definition);
 		}
-	}
-
-
-	private function initDatabase(ContainerBuilder $builder)
-	{
-
 	}
 
 
@@ -149,9 +144,14 @@ final class moviExtension extends CompilerExtension
 	{
 		$helpers = $builder->getDefinition($this->prefix('helpers'));
 
-		foreach(array_keys($builder->findByTag('helper')) as $helper)
+		foreach(array_keys($builder->findByTag(self::HELPER_TAG)) as $helper)
 		{
 			$definition = $builder->getDefinition($helper);
+
+			if (!isset($definition->tags['name'])) {
+				throw new InvalidArgumentException('Missing name for helper ' . $helper);
+			}
+
 			$name = $definition->tags['name'];
 
 			$helpers->addSetup('registerHelper', [$name, '@' . $helper]);
@@ -163,9 +163,14 @@ final class moviExtension extends CompilerExtension
 	{
 		$media = $builder->getDefinition($this->prefix('media'));
 
-		foreach(array_keys($builder->findByTag('media.storage')) as $storage)
+		foreach(array_keys($builder->findByTag(self::MEDIA_STORAGE_TAG)) as $storage)
 		{
 			$definition = $builder->getDefinition($storage);
+
+			if (!isset($definition->tags['name'])) {
+				throw new InvalidArgumentException('Missing name for storage ' . $storage);
+			}
+
 			$name = $definition->tags['name'];
 
 			$media->addSetup('addStorage', [$name, '@' . $storage]);
@@ -199,9 +204,14 @@ final class moviExtension extends CompilerExtension
 	{
 		$widgets = $builder->getDefinition($this->prefix('widgets'));
 
-		foreach(array_keys($builder->findByTag('widget')) as $widget)
+		foreach(array_keys($builder->findByTag(self::WIDGET_TAG)) as $widget)
 		{
 			$definition = $builder->getDefinition($widget);
+
+			if (!isset($definition->tags['name'])) {
+				throw new InvalidArgumentException('Missing name for widget ' . $widget);
+			}
+
 			$name = $definition->tags['name'];
 
 			$widgets->addSetup('addWidget', [$name, '@' . $widget]);
@@ -221,6 +231,19 @@ final class moviExtension extends CompilerExtension
 		$builder->addDefinition($this->prefix('assetsCommand'))
 			->setClass('movi\Console\Commands\AssetsCommand')
 			->addTag('kdyby.console.command');
+	}
+
+
+	private function initMedia(ContainerBuilder $builder)
+	{
+		$builder->addDefinition($this->prefix('media'))
+			->setClass('movi\Media\Media', ['storage', '%wwwDir%']);
+
+		$builder->addDefinition('thumbnailer')
+			->setClass('movi\Media\Utils\Thumbnailer');
+
+		$builder->addDefinition('linker')
+			->setClass('movi\Media\Utils\Linker');
 	}
 
 }
