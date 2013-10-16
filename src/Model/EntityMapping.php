@@ -2,6 +2,8 @@
 
 namespace movi\Model;
 
+use movi\InvalidArgumentException;
+
 class EntityMapping
 {
 
@@ -11,11 +13,16 @@ class EntityMapping
 
 	/**
 	 * @param array $entities
+	 * @throws \movi\InvalidArgumentException
 	 */
 	public function registerEntities(array $entities)
 	{
 		foreach ($entities as $table => $entity)
 		{
+			if (isset($this->entities[$table])) {
+				throw new InvalidArgumentException("Entity for table $table is already registered.");
+			}
+
 			$this->entities[$table] = $entity;
 		}
 	}
@@ -28,7 +35,7 @@ class EntityMapping
 	public function getEntity($table)
 	{
 		if (!array_key_exists($table, $this->entities)) {
-			return false;
+			return NULL;
 		} else {
 			return $this->entities[$table];
 		}

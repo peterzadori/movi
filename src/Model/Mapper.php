@@ -30,11 +30,7 @@ class Mapper extends DefaultMapper
 	 */
 	public function getEntityClass($table, Row $row = NULL)
 	{
-		if ($entity = $this->entityMapping->getEntity($table)) {
-			return $entity;
-		} else {
-			return $this->formatEntityClassName($table);
-		}
+		return $this->entityMapping->getEntity($table);
 	}
 
 
