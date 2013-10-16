@@ -26,8 +26,9 @@ final class PresenterFactory extends Nette\Application\PresenterFactory
 	public function createPresenter($name)
 	{
 		$class = $this->getPresenterClass($name);
-		if (($services = $this->container->getByType($class, false)) !== NULL) {
-			$presenter = $this->container->createInstance($services[0]);
+
+		if (($service = $this->container->getByType($class, false)) !== NULL) {
+			$presenter = $service;
 		} else {
 			$presenter = $this->container->createInstance($class);
 		}
