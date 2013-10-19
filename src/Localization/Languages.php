@@ -6,7 +6,6 @@ use movi\EntityNotFound;
 use movi\InvalidStateException;
 use Nette\Object;
 use movi\Model\Entities\Language as LanguageEntity;
-use movi\Model\Repositories\LanguagesRepository;
 
 final class Languages extends Object
 {
@@ -30,18 +29,16 @@ final class Languages extends Object
 		$this->languagesRepository = $languagesRepository;
 		$this->languages = $languagesRepository->getActive();
 
-		if (count($this->languages) == 0) {
-			throw new InvalidStateException('No languages found.');
-		}
+		if (count($this->languages) > 0) {
+			$this->current = $language;
 
-		$this->current = $language;
+			foreach ($this->languages as $language)
+			{
+				if ($language->default === true) {
+					$this->default = $language;
 
-		foreach ($this->languages as $language)
-		{
-			if ($language->default === true) {
-				$this->default = $language;
-
-				$this->setCurrent($language);
+					$this->setCurrent($language);
+				}
 			}
 		}
 	}

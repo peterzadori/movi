@@ -2,6 +2,7 @@
 
 namespace movi\Tree;
 
+use movi\Model\Repository;
 use Nette\Object;
 use Nette\Utils\Strings;
 use movi\InvalidArgumentException;
@@ -41,10 +42,10 @@ abstract class Tree extends Object
 
 
 	/**
-	 * @param TreeRepository $repository
+	 * @param Repository $repository
 	 * @return $this
 	 */
-	public function setRepository(TreeRepository $repository)
+	public function setRepository(Repository $repository)
 	{
 		$this->repository = $repository;
 
@@ -111,7 +112,7 @@ abstract class Tree extends Object
 	 * @return mixed
 	 * @throws NodeNotFound
 	 */
-	public function getNode($id)
+	public function &getNode($id)
 	{
 		if (is_int($id)) {
 			if (isset($this->nodes[$id])) {
@@ -150,7 +151,7 @@ abstract class Tree extends Object
 	 * @param $parent
 	 * @return null
 	 */
-	public function addChild($child, $parent = NULL)
+	public function addChild(&$child, $parent = NULL)
 	{
 		if (!$child->isDetached()) {
 			if (($child->parent === NULL && $parent === NULL) || ($child->parent !== NULL && $parent !== NULL && $child->parent->id === $parent->id)) {
@@ -182,6 +183,9 @@ abstract class Tree extends Object
 		$this->repository->persist($child);
 
 		$this->rebuild();
+
+		// Set new child
+		$child = $this->getNode($child->id);
 	}
 
 
@@ -190,7 +194,7 @@ abstract class Tree extends Object
 	 * @param $parent
 	 * @return bool
 	 */
-	public function moveNode($node, $parent = NULL)
+	public function moveNode(&$node, $parent = NULL)
 	{
 		if ($parent !== NULL) {
 			// Get node's children
@@ -211,7 +215,6 @@ abstract class Tree extends Object
 		}
 
 		if ($node->parent != $parent) {
-			// Reorder
 			$this->reorder($node);
 			$this->addChild($node, $parent);
 

@@ -30,6 +30,7 @@ final class moviExtension extends CompilerExtension
 	];
 
 
+
 	public function loadConfiguration()
 	{
 		$config = $this->getConfig($this->defaults);
@@ -182,7 +183,7 @@ final class moviExtension extends CompilerExtension
 	{
 		// Password
 		$builder->addDefinition($this->prefix('password'))
-			->setClass('movi\Tools\Password', [$config['password']['salt'], $config['password']['algorithm']]);
+			->setClass('movi\Security\Password', [$config['password']['salt'], $config['password']['algorithm']]);
 
 		$builder->getDefinition('nette.userStorage')
 			->setClass('movi\Security\UserStorage');

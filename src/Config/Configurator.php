@@ -22,8 +22,8 @@ final class Configurator extends Nette\Config\Configurator
 	{
 		$this->setup();
 
-		// Create the Robot Loader
-		$this->createRobotLoader();
+		// Create and register the Robot Loader
+		$this->createRobotLoader()->register();
 
 		// Register packages
 		$this->createPackages();
@@ -68,18 +68,18 @@ final class Configurator extends Nette\Config\Configurator
 	 */
 	public function createRobotLoader()
 	{
-		$loader = parent::createRobotLoader();
-		$loader->addDirectory($this->parameters['packagesDir']);
+		if ($this->robotLoader === NULL) {
+			$loader = parent::createRobotLoader();
+			$loader->addDirectory($this->parameters['packagesDir']);
 
-		if (file_exists($this->parameters['libsDir'])) {
-			$loader->addDirectory($this->parameters['libsDir']);
+			if (file_exists($this->parameters['libsDir'])) {
+				$loader->addDirectory($this->parameters['libsDir']);
+			}
+
+			$this->robotLoader = $loader;
 		}
 
-		$loader->register();
-
-		$this->robotLoader = $loader;
-
-		return $loader;
+		return $this->robotLoader;
 	}
 
 

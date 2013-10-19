@@ -1,10 +1,8 @@
 <?php
 
-namespace movi\Tools;
+namespace movi\Security;
 
-use Nette\Object;
-
-class Password extends Object
+class Password
 {
 
 	/** @var string */
