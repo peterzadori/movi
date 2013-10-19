@@ -4,6 +4,7 @@ namespace movi\Tree;
 
 use movi\Caching\CacheProvider;
 use movi\Localization\Language;
+use movi\Model\Repository;
 use movi\Model\TreeRepository;
 use Nette\Caching\Cache;
 
@@ -31,10 +32,10 @@ class CachedTree extends Tree
 
 
 	/**
-	 * @param TreeRepository $repository
-	 * @return $this|void
+	 * @param Repository $repository
+	 * @return $this
 	 */
-	public function setRepository(TreeRepository $repository)
+	public function setRepository(Repository $repository)
 	{
 		parent::setRepository($repository);
 
