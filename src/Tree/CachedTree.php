@@ -130,7 +130,7 @@ class CachedTree extends Tree
 	 * @param $url
 	 * @return mixed
 	 */
-	public function getNode($url)
+	public function &getNode($url)
 	{
 		if (array_key_exists($url, $this->urls)) {
 			$url = $this->urls[$url];
