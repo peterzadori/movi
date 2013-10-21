@@ -5,6 +5,7 @@ namespace movi\Packages\Installers;
 use Nette\Utils\Finder;
 use movi\Packages\IInstaller;
 use movi\Packages\Package;
+use Nette\Utils\Strings;
 
 class ResourceInstaller implements IInstaller
 {
@@ -61,6 +62,18 @@ class ResourceInstaller implements IInstaller
 			if (!file_exists($dir)) {
 				umask(0000);
 				mkdir($dir, 0777, true);
+			}
+
+			if (Strings::lower($file->getExtension()) == 'zip' && extension_loaded('zlib')) {
+				$archive = new \ZipArchive();
+				$res = $archive->open($file->getRealPath());
+
+				if ($res === true) {
+					$archive->extractTo($targetDir);
+					$archive->close();
+				}
+
+				continue;
 			}
 
 			@copy($file->getPathname(), $target);
