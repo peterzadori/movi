@@ -98,6 +98,49 @@ abstract class Tree extends Object
 	}
 
 
+	public function moveTop($node)
+	{
+		if ($node->order == 1) {
+			return false;
+		} else {
+			$siblings = $this->getSiblings($node);
+			$previous = $siblings[$node->order - 1];
+
+			$previous->order = $node->order;
+			$this->repository->persist($previous);
+
+			$node->order = $node->order - 1;
+			$this->repository->persist($node);
+
+			$this->rebuild();
+
+			return true;
+		}
+	}
+
+
+	public function moveDown($node)
+	{
+		$siblings = $this->getSiblings($node);
+
+		if (!isset($siblings[$node->order + 1])) {
+			return false;
+		} else {
+			$next = $siblings[$node->order + 1];
+
+			$next->order = $node->order;
+			$this->repository->persist($next);
+
+			$node->order = $node->order + 1;
+			$this->repository->persist($node);
+
+			$this->rebuild();
+
+			return true;
+		}
+	}
+
+
 	/**
 	 * @return mixed
 	 */
@@ -418,7 +461,7 @@ abstract class Tree extends Object
 				continue;
 			}
 
-			$siblings[] = $sibling;
+			$siblings[$sibling->order] = $sibling;
 		}
 
 		return $siblings;
