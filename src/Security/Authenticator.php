@@ -2,6 +2,7 @@
 
 namespace movi\Security;
 
+use movi\InvalidStateException;
 use Nette\Security\AuthenticationException;
 use Nette\Security\IAuthenticator;
 
@@ -12,7 +13,7 @@ class Authenticator implements IAuthenticator
 	private $users;
 
 
-	public function __construct(IUsers $users)
+	public function __construct(IUsers $users = NULL)
 	{
 		$this->users = $users;
 	}
@@ -20,11 +21,16 @@ class Authenticator implements IAuthenticator
 
 	/**
 	 * @param array $credentials
-	 * @return Identity
+	 * @return Identity|\Nette\Security\IIdentity
+	 * @throws \movi\InvalidStateException
 	 * @throws \Nette\Security\AuthenticationException
 	 */
 	public function authenticate(array $credentials)
 	{
+		if ($this->users === NULL) {
+			throw new InvalidStateException('Service IUsers is not registered.');
+		}
+
 		$user = $this->users->login($credentials);
 
 		if (!$user) {

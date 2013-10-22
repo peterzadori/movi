@@ -2,6 +2,7 @@
 
 namespace movi\Security;
 
+use movi\InvalidStateException;
 use Nette;
 
 class UserStorage extends Nette\Http\UserStorage
@@ -14,7 +15,7 @@ class UserStorage extends Nette\Http\UserStorage
 	private $authenticated;
 
 
-	public function __construct(Nette\Http\Session $session, IUsers $users)
+	public function __construct(Nette\Http\Session $session, IUsers $users = NULL)
 	{
 		parent::__construct($session);
 
@@ -24,10 +25,15 @@ class UserStorage extends Nette\Http\UserStorage
 
 	/**
 	 * @return Identity|Nette\Security\IIdentity|NULL
+	 * @throws InvalidStateException
 	 */
 	public function getIdentity()
 	{
 		$identity = parent::getIdentity();
+
+		if ($this->users === NULL) {
+			throw new InvalidStateException('Service IUsers is not registered.');
+		}
 
 		if ($identity instanceof Identity && !$identity->isLoaded()) {
 			$this->users->loadIdentity($identity);
@@ -39,10 +45,15 @@ class UserStorage extends Nette\Http\UserStorage
 
 	/**
 	 * @return bool
+	 * @throws InvalidStateException
 	 */
 	public function isAuthenticated()
 	{
 		$authenticated = parent::isAuthenticated();
+
+		if ($this->users === NULL) {
+			throw new InvalidStateException('Service IUsers is not registered.');
+		}
 
 		if ($this->authenticated === NULL || $this->authenticated !== $authenticated) {
 			if ($authenticated === true) {

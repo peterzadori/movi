@@ -10,10 +10,8 @@ use movi\Model\Entities\Language as LanguageEntity;
 final class Languages extends Object
 {
 
-	private $languagesRepository;
-
 	/** @var Language[] */
-	private $languages;
+	private $languages = [];
 
 	/** @var Language */
 	private $current;
@@ -24,23 +22,28 @@ final class Languages extends Object
 	public $onSet;
 
 
-	public function __construct(Language $language, ILanguagesRepository $languagesRepository)
+	public function __construct(Language $language, ILanguagesRepository $languagesRepository = NULL)
 	{
-		$this->languagesRepository = $languagesRepository;
-		$this->languages = $languagesRepository->getActive();
+		if ($languagesRepository !== NULL) {
+			$languages = $languagesRepository->getActive();
 
-		if (count($this->languages) > 0) {
-			$this->current = $language;
+			if (count($languages) > 0) {
+				$this->current = $language;
 
-			foreach ($this->languages as $language)
-			{
-				if ($language->default === true) {
-					$this->default = $language;
+				foreach ($languages as $language)
+				{
+					$this->languages[$language->code] = $language;
 
-					$this->setCurrent($language);
+					if ($language->default === true) {
+						$this->default = $language;
+
+						$this->setCurrent($language);
+					}
 				}
 			}
 		}
+
+
 	}
 
 
@@ -60,9 +63,9 @@ final class Languages extends Object
 	public function setCurrent($language)
 	{
 		if (!($language instanceof LanguageEntity)) {
-			try {
-				$language = $this->languagesRepository->findByCode($language);
-			} catch (EntityNotFound $e) {
+			if (isset($this->languages[$language->code])) {
+				$language = $this->languages[$language->code];
+			} else {
 				$language = $this->default;
 			}
 		}
