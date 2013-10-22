@@ -88,20 +88,10 @@ final class Configurator extends Nette\Config\Configurator
 	 */
 	private function createPackages()
 	{
-		$collection = new InstalledPackages($this->parameters['packagesDir']);
-		$packages = $collection->getPackages();
+		$packages = new movi\Packages\Packages($this, $this->parameters['packagesDir']);
+		$packages->setCacheStorage(new Nette\Caching\Storages\FileStorage($this->getCacheDirectory()));
 
-		foreach ($packages as $package)
-		{
-			if (!empty($package['config'])) {
-				foreach($package['config'] as $config)
-				{
-					$this->addConfig($package['dir'] . $config, $this::NONE);
-				}
-			}
-		}
-
-		$this->parameters['packages'] = $packages;
+		$this->parameters['packages'] = $packages->getPackages();
 	}
 
 

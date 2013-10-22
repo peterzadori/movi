@@ -5,6 +5,9 @@ namespace movi\Packages\Collections;
 use movi\PackageRegisteredException;
 use movi\Packages\ICollection;
 use movi\Packages\Loader;
+use Nette\Caching\Cache;
+use Nette\Caching\IStorage;
+use Nette\Caching\Storages\DevNullStorage;
 use Nette\Utils\Finder;
 
 class InstalledPackages implements ICollection
@@ -15,10 +18,20 @@ class InstalledPackages implements ICollection
 	/** @var string */
 	private $packagesDir;
 
+	private $cacheStorage;
+
 
 	public function __construct($packagesDir)
 	{
 		$this->packagesDir = $packagesDir;
+	}
+
+
+	public function setCacheStorage(IStorage $cacheStorage)
+	{
+		$this->cacheStorage = $cacheStorage;
+
+		return $this;
 	}
 
 
@@ -27,23 +40,27 @@ class InstalledPackages implements ICollection
 	 */
 	public function getPackages()
 	{
-		$this->findPackages();
-
-		return $this->packages;
+		return $this->getCache()->load('packages', callback($this, 'findPackages'));
 	}
 
 
-	private function findPackages()
+	public function findPackages()
 	{
+		$packages = [];
+
 		foreach (Finder::findDirectories('*')->in($this->packagesDir) as $package)
 		{
-			$this->register($package);
+			$package = $this->register($package);
+			$packages[$package['name']] = $package;
 		}
+
+		return $packages;
 	}
 
 
 	/**
 	 * @param \SplFileInfo $package
+	 * @return mixed
 	 * @throws \movi\PackageRegisteredException
 	 */
 	private function register(\SplFileInfo $package)
@@ -55,7 +72,22 @@ class InstalledPackages implements ICollection
 			throw new PackageRegisteredException("Package '" . $package['name'] . "' is already registered.");
 		}
 
-		$this->packages[$package['name']] = $package;
+		return $package;
+	}
+
+
+	public function getCacheStorage()
+	{
+		return $this->cacheStorage;
+	}
+
+
+	/**
+	 * @return Cache
+	 */
+	protected function getCache()
+	{
+		return new Cache($this->cacheStorage, 'movi.installedPackages');
 	}
 
 }
