@@ -197,4 +197,15 @@ abstract class Repository extends \LeanMapper\Repository
 		return $this->createEntity($row);
 	}
 
+
+	/**
+	 * @return Entity
+	 */
+	public function createEmptyEntity()
+	{
+		$entityClass = $this->mapper->getEntityClass($this->getTable());
+
+		return new $entityClass();
+	}
+
 }
