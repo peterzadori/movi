@@ -5,6 +5,7 @@ namespace movi\Model;
 use Kdyby\Events\EventManager;
 use LeanMapper\Events;
 use LeanMapper\Fluent;
+use LeanMapper\IEntityFactory;
 use LeanMapper\IMapper;
 use Nette\ObjectMixin;
 use Nette\Reflection\ClassType;
@@ -21,9 +22,9 @@ abstract class Repository extends \LeanMapper\Repository
 	protected $evm;
 
 
-	public function __construct(Connection $connection, IMapper $mapper, EventManager $evm)
+	public function __construct(Connection $connection, IMapper $mapper, IEntityFactory $entityFactory, EventManager $evm)
 	{
-		parent::__construct($connection, $mapper);
+		parent::__construct($connection, $mapper, $entityFactory);
 
 		$this->evm = $evm;
 		$this->initKdybyEvents();
@@ -35,7 +36,7 @@ abstract class Repository extends \LeanMapper\Repository
 	 */
 	public function getStatement()
 	{
-		return $this->connection->select('*')->from($this->getTable());
+		return $this->createFluent();
 	}
 
 

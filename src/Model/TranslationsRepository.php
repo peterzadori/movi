@@ -3,6 +3,7 @@
 namespace movi\Model;
 
 use Kdyby\Events\EventManager;
+use LeanMapper\IEntityFactory;
 use LeanMapper\IMapper;
 use movi\InvalidArgumentException;
 use movi\Localization\Languages;
@@ -18,9 +19,9 @@ abstract class TranslationsRepository extends Repository
 	protected $languages;
 
 
-	public function __construct(Connection $connection, IMapper $mapper, EventManager $evm, Languages $languages)
+	public function __construct(Connection $connection, IMapper $mapper, IEntityFactory $entityFactory, EventManager $evm, Languages $languages)
 	{
-		parent::__construct($connection, $mapper, $evm);
+		parent::__construct($connection, $mapper, $entityFactory, $evm);
 
 		$this->languages = $languages;
 	}

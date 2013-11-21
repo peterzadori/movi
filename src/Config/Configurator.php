@@ -49,7 +49,6 @@ final class Configurator extends Nette\Config\Configurator
 		$compiler->addExtension('movi', new movi\Config\Extensions\moviExtension);
 		$compiler->addExtension('packages', new movi\Config\Extensions\PackagesExtension());
 
-		$compiler->addExtension('database', new movi\Config\Extensions\DatabaseExtension());
 		$compiler->addExtension('repositories', new movi\Config\Extensions\RepositoriesExtension());
 		$compiler->addExtension('filters', new movi\Config\Extensions\FiltersExtension());
 
@@ -71,10 +70,6 @@ final class Configurator extends Nette\Config\Configurator
 		if ($this->robotLoader === NULL) {
 			$loader = parent::createRobotLoader();
 			$loader->addDirectory($this->parameters['packagesDir']);
-
-			if (file_exists($this->parameters['libsDir'])) {
-				$loader->addDirectory($this->parameters['libsDir']);
-			}
 
 			$this->robotLoader = $loader;
 		}

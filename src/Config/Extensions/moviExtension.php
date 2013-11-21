@@ -26,6 +26,7 @@ final class moviExtension extends CompilerExtension
 			'salt' => NULL,
 			'algorithm' => 'sha512'
 		],
+		'database' => [],
 		'macros' => []
 	];
 
@@ -49,6 +50,8 @@ final class moviExtension extends CompilerExtension
 		$builder->addDefinition($this->prefix('cacheProvider'))
 			->setClass('movi\Caching\CacheProvider');
 
+		$this->initDatabase($builder, $config);
+
 		$this->initLocalization($builder);
 
 		$this->initTemplating($builder, $config);
@@ -60,6 +63,60 @@ final class moviExtension extends CompilerExtension
 		$this->initAssets($builder);
 
 		$this->initMedia($builder);
+	}
+
+
+	private function initDatabase(ContainerBuilder $builder, $config)
+	{
+		$config = $config['database'];
+
+		$useProfiler = isset($config['profiler'])
+			? $config['profiler']
+			: !$builder->parameters['productionMode'];
+
+		unset($config['profiler']);
+
+		if (isset($config['flags'])) {
+			$flags = 0;
+			foreach ((array) $config['flags'] as $flag) {
+				$flags |= constant($flag);
+			}
+			$config['flags'] = $flags;
+		}
+
+		$connection = $builder->addDefinition($this->prefix('connection'))
+			->setClass('movi\Model\Connection', array($config));
+
+		$builder->addDefinition($this->prefix('mapper'))
+			->setClass('movi\Model\Mapper');
+
+		$builder->addDefinition($this->prefix('entityMapping'))
+			->setClass('movi\Model\EntityMapping');
+
+		$builder->addDefinition($this->prefix('entityFactory'))
+			->setClass('movi\Model\EntityFactory');
+
+		// Filters
+		$builder->addDefinition($this->prefix('translateFilter'))
+			->setClass('movi\Model\Filters\TranslateFilter')
+			->addTag('name', 'translate')
+			->addTag('callback', 'translate')
+			->addTag('wire', 'p')
+			->addTag('database.filter');
+
+		$builder->addDefinition($this->prefix('orderFilter'))
+			->setClass('movi\Model\Filters\OrderFilter')
+			->addTag('name', 'order')
+			->addTag('database.filter');
+
+		if ($useProfiler) {
+			$panel = $builder->addDefinition($this->prefix('panel'))
+				->setClass('DibiNettePanel')
+				->addSetup('Nette\Diagnostics\Debugger::$bar->addPanel(?)', array('@self'))
+				->addSetup('Nette\Diagnostics\Debugger::$blueScreen->addPanel(?)', array('DibiNettePanel::renderException'));
+
+			$connection->addSetup('$service->onEvent[] = ?', array(array($panel, 'logEvent')));
+		}
 	}
 
 
@@ -111,9 +168,12 @@ final class moviExtension extends CompilerExtension
 		$builder->addDefinition($this->prefix('languages'))
 			->setClass('movi\Localization\Languages');
 
-		$builder->addDefinition($this->prefix('translator'))
-			->setClass('movi\Localization\Translator')
+		$builder->addDefinition($this->prefix('translations'))
+			->setClass('movi\Localization\Translations')
 			->setArguments(['%localeDir%']);
+
+		$builder->addDefinition($this->prefix('translator'))
+			->setClass('movi\Localization\Translator');
 	}
 
 

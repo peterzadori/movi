@@ -10,9 +10,6 @@ use Nette\Utils\Strings;
 class Mapper extends DefaultMapper
 {
 
-	/** @var string */
-	protected $defaultEntityNamespace = '\movi\Model\Entities';
-
 	/** @var EntityMapping */
 	private $entityMapping;
 
@@ -31,20 +28,6 @@ class Mapper extends DefaultMapper
 	public function getEntityClass($table, Row $row = NULL)
 	{
 		return $this->entityMapping->getEntity($table);
-	}
-
-
-	/**
-	 * @param $entity
-	 * @return string
-	 */
-	private function formatEntityClassName($entity)
-	{
-		if (substr($entity, 0, 1) != '\\') {
-			return $this->defaultEntityNamespace . '\\' . $entity;
-		} else {
-			return $entity;
-		}
 	}
 
 
