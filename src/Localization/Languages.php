@@ -63,8 +63,8 @@ final class Languages extends Object
 	public function setCurrent($language)
 	{
 		if (!($language instanceof LanguageEntity)) {
-			if (isset($this->languages[$language->code])) {
-				$language = $this->languages[$language->code];
+			if (isset($this->languages[$language])) {
+				$language = $this->languages[$language];
 			} else {
 				$language = $this->default;
 			}
