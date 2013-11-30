@@ -1,9 +1,8 @@
 <?php
 
-namespace movi\Config\Extensions;
+namespace movi\DI\Extensions;
 
-use movi\Config\CompilerExtension;
-use Nette\DI\ContainerBuilder;
+use movi\DI\CompilerExtension;
 use Nette\Reflection\ClassType;
 
 final class RepositoriesExtension extends CompilerExtension

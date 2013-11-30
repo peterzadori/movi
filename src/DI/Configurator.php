@@ -1,14 +1,12 @@
 <?php
 
-namespace movi\Config;
+namespace movi\DI;
 
 use Kdyby;
 use Nette;
 use movi;
-use VojtechDobes\NetteForms\InputListExtension;
-use movi\Packages\Collections\InstalledPackages;
 
-final class Configurator extends Nette\Config\Configurator
+final class Configurator extends Nette\Configurator
 {
 
 	/** @var \Nette\Loaders\RobotLoader */
@@ -16,7 +14,7 @@ final class Configurator extends Nette\Config\Configurator
 
 
 	/**
-	 * @return \SystemContainer
+	 * @return Nette\DI\Container
 	 */
 	public function createContainer()
 	{
@@ -39,24 +37,22 @@ final class Configurator extends Nette\Config\Configurator
 
 
 	/**
-	 * @return Nette\Config\Compiler
+	 * @return \Nette\DI\Compiler
 	 */
 	protected function createCompiler()
 	{
 		$compiler = parent::createCompiler();
 
 		// Register extensions
-		$compiler->addExtension('movi', new movi\Config\Extensions\moviExtension);
-		$compiler->addExtension('packages', new movi\Config\Extensions\PackagesExtension());
+		$compiler->addExtension('movi', new movi\DI\Extensions\moviExtension);
+		$compiler->addExtension('packages', new movi\DI\Extensions\PackagesExtension());
 
-		$compiler->addExtension('repositories', new movi\Config\Extensions\RepositoriesExtension());
-		$compiler->addExtension('filters', new movi\Config\Extensions\FiltersExtension());
+		$compiler->addExtension('repositories', new movi\DI\Extensions\RepositoriesExtension());
+		$compiler->addExtension('filters', new movi\DI\Extensions\FiltersExtension());
 
-		$compiler->addExtension('extensions', new movi\Config\Extensions\ExtensionsExtension);
 		$compiler->addExtension('forms', new movi\Forms\DI\FormsExtension());
 		$compiler->addExtension('events', new Kdyby\Events\DI\EventsExtension());
 		$compiler->addExtension('console', new Kdyby\Console\DI\ConsoleExtension());
-		$compiler->addExtension('inputlist', new InputListExtension());
 
 		return $compiler;
 	}

@@ -1,14 +1,14 @@
 <?php
 
-namespace movi\Config\Extensions;
+namespace movi\DI\Extensions;
 
 use movi\InvalidArgumentException;
 use movi\InvalidStateException;
-use Nette\Config\Compiler;
+use Nette\DI\Compiler;
 use Nette\DI\ContainerBuilder;
-use Nette\Utils\PhpGenerator\ClassType;
+use Nette\PhpGenerator\ClassType;
 use Nette\Utils\Validators;
-use movi\Config\CompilerExtension;
+use movi\DI\CompilerExtension;
 
 final class moviExtension extends CompilerExtension
 {

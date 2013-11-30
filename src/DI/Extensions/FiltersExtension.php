@@ -1,8 +1,8 @@
 <?php
 
-namespace movi\Config\Extensions;
+namespace movi\DI\Extensions;
 
-use movi\Config\CompilerExtension;
+use movi\DI\CompilerExtension;
 use Nette\Reflection\ClassType;
 use Nette\Utils\Arrays;
 

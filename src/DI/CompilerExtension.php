@@ -1,8 +1,8 @@
 <?php
 
-namespace movi\Config;
+namespace movi\DI;
 
-abstract class CompilerExtension extends \Nette\Config\CompilerExtension
+abstract class CompilerExtension extends \Nette\DI\CompilerExtension
 {
 
 	/**

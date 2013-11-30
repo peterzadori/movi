@@ -5,7 +5,7 @@ namespace movi\Application\Routers;
 use movi\Localization\Languages;
 use Nette\Application\Routers\Route;
 
-class LangRoute extends Route
+class LanguageRoute extends Route
 {
 
 	/** @var string */

@@ -43,14 +43,6 @@ abstract class Presenter extends \Nette\Application\UI\Presenter
 	}
 
 
-	public function injectContainer(Container $context)
-	{
-		if ($context && $this->invalidLinkMode === NULL) {
-			$this->invalidLinkMode = $context->parameters['productionMode'] ? self::INVALID_LINK_SILENT : self::INVALID_LINK_WARNING;
-		}
-	}
-
-
 	/**
 	 * @param null $class
 	 * @return \Nette\Templating\ITemplate
