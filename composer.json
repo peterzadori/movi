@@ -10,15 +10,14 @@
 	],
 	"require": {
 		"php": ">=5.4",
-		"nette/nette": "2.0.*",
-		"kdyby/events": "dev-nette-2.0",
-		"kdyby/forms-replicator": "dev-nette-2.0",
+		"nette/nette": "dev-release-2.1.x",
+		"kdyby/events": "@dev",
+		"kdyby/forms-replicator": "@dev",
 		"tharos/leanmapper": "dev-develop",
-		"doctrine/inflector": "dev-master",
-		"kdyby/console": "dev-nette-2.0",
+		"kdyby/console": "@dev",
 		"Kdyby/bootstrap-form-renderer": "@dev",
 		"gavroche/browser": "@dev",
-		"vojtech-dobes/nette-forms-inputlist": "@dev",
+		"doctrine/inflector": "dev-master",
 		"doctrine/dbal": "@dev"
 	},
 	"require-dev": {
